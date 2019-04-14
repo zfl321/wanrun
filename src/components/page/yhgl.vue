@@ -485,8 +485,7 @@ export default {
           callback(new Error('请输入正确的邮箱格式'))
         }
       }
-    },
-
+    }
     return {
       loading: false,
       //查看详情数据
