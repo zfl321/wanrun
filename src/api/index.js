@@ -5,8 +5,8 @@ import QS from 'qs'
 axios.defaults.withCredentials = true
 // console.log(axios.defaults)
 
-axios.defaults.baseURL = 'http://172.16.106.35:9527'
-// axios.defaults.baseURL = 'http://47.92.64.56:9527'
+// axios.defaults.baseURL = 'http://172.16.106.35:9527'
+axios.defaults.baseURL = 'http://47.92.64.56:9527'
 // axios.defaults.baseURL = 'http://192.168.1.41:9527'
 // axios.defaults.baseURL = 'http://35h5wk.natappfree.cc'
 // 登陆函数

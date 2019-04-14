@@ -142,16 +142,15 @@
                 <span v-else-if="scope.row.ssex==0" type="info">女</span>
               </template>
             </el-table-column>
-            <el-table-column prop="email" label="邮箱" width="150"></el-table-column>
+            <!-- <el-table-column prop="email" label="邮箱" width="150"></el-table-column> -->
             <el-table-column prop="lastLoginTime" label="最近登陆时间" width="150"></el-table-column>
-            <el-table-column prop="description" label="描述" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="status" label="状态">
+            <el-table-column prop="status" label="状态" width="70">
               <template slot-scope="scope">
                 <el-tag v-if="scope.row.status==1">启用</el-tag>
                 <el-tag v-else type="info">停用</el-tag>
               </template>
             </el-table-column>
-
+            <el-table-column prop="description" label="描述" show-overflow-tooltip></el-table-column>
             <!-- 操作按钮列 -->
             <el-table-column label="操作" width="130">
               <template slot-scope="scope">
@@ -455,12 +454,28 @@
       </div>
     </el-dialog>
     <!-- 查看详情弹窗 -->
-    <el-dialog title="收货地址" :visible.sync="dialogTableVisible4">
+    <el-dialog title="查看用户详情" :visible.sync="dialogTableVisible4">
       <div>
-        <div class="my-row">
-          <span class="my-col1">用户名：{{gridData.username}}</span>
-          <span class="my-col2">角色：{{gridData.roleName}}</span>
-        </div>
+        <el-row>
+          <el-col :span="12">用户名：{{gridData.username}}</el-col>
+          <el-col :span="12">角色：{{gridData.roleName}}</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">品牌：{{gridData.brand}}</el-col>
+          <el-col :span="12">门店：{{gridData.store}}</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">真实姓名：{{gridData.fullName}}</el-col>
+          <el-col :span="12">邮箱：{{gridData.email}}</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">电话号码：{{gridData.mobile}}</el-col>
+          <el-col :span="12">座机号码：{{gridData.oph}}</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">创建时间：{{gridData.createTime}}</el-col>
+          <el-col :span="12">最近登陆时间：{{gridData.lastLoginTime}}</el-col>
+        </el-row>
       </div>
     </el-dialog>
   </div>
@@ -851,8 +866,7 @@ export default {
     handleDetails (row) {
       this.gridData = row
       console.log(this.gridData)
-      this.dialogFormVisible4 = true
-
+      this.dialogTableVisible4 = true
     }
 
   }
