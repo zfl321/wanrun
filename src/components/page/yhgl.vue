@@ -1,5 +1,5 @@
 <template>
-  <div class="my-box">
+  <div class="my-box" v-loading="loading">
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">
@@ -139,12 +139,12 @@
             <el-table-column prop="ssex" label="性别" width="50">
               <template slot-scope="scope">
                 <span v-if="scope.row.ssex==1">男</span>
-                <span v-else type="info">女</span>
+                <span v-else-if="scope.row.ssex==0" type="info">女</span>
               </template>
             </el-table-column>
             <el-table-column prop="email" label="邮箱" width="150"></el-table-column>
-            <el-table-column prop="lastLoginTime" label="最近登陆时间" width="120"></el-table-column>
-            <el-table-column prop="description" label="描述"></el-table-column>
+            <el-table-column prop="lastLoginTime" label="最近登陆时间" width="150"></el-table-column>
+            <el-table-column prop="description" label="描述" show-overflow-tooltip></el-table-column>
             <el-table-column prop="status" label="状态">
               <template slot-scope="scope">
                 <el-tag v-if="scope.row.status==1">启用</el-tag>
@@ -194,7 +194,7 @@
         <el-row :gutter="10">
           <el-col :span="12">
             <el-form-item label="品牌">
-              <el-select v-model="editData.brand" @change="selectOne" placeholder="请选择">
+              <el-select v-model="editData.brandId" @change="selectOne" placeholder="请选择">
                 <el-option
                   v-for="(item,index) in brandSelectData"
                   :key="index"
@@ -206,7 +206,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="门店">
-              <el-select v-model="editData.store" @change="selectTwo" placeholder="请选择">
+              <el-select v-model="editData.storeId" @change="selectTwo" placeholder="请选择">
                 <el-option
                   v-for="(item,index) in hotelSelectData"
                   :key="index"
@@ -284,7 +284,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible2=false">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD">确 定</el-button>
+        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -294,7 +294,7 @@
         <el-row :gutter="10">
           <el-col :span="12">
             <el-form-item label="品牌">
-              <el-select v-model="addform.brand" @change="selectOne" placeholder="请选择">
+              <el-select v-model="addform.brandId" @change="selectOne" placeholder="请选择">
                 <el-option
                   v-for="(item,index) in brandSelectData"
                   :key="index"
@@ -306,7 +306,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="门店">
-              <el-select v-model="addform.store" @change="selectTwo" placeholder="请选择">
+              <el-select v-model="addform.storeId" @change="selectTwo" placeholder="请选择">
                 <el-option
                   v-for="(item,index) in hotelSelectData"
                   :key="index"
@@ -398,7 +398,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 重置密码的弹框 -->
@@ -485,8 +485,10 @@ export default {
           callback(new Error('请输入正确的邮箱格式'))
         }
       }
-    }
+    },
+
     return {
+      loading: false,
       //查看详情数据
       gridData: {
         fullName: null,
@@ -500,7 +502,8 @@ export default {
         roleId: null,
         userId: null,
         email: null,
-        status: null
+        status: null,
+        lastLoginTime: null
       },
       // 重置密码数据
       passwordData: {
@@ -509,10 +512,10 @@ export default {
         password: null,
       },
       dialogFormVisible3: false,
+      dialogTableVisible4: false,
       // 建筑列表数据
       tableData: null,
       dialogFormVisible2: null,
-      dialogTableVisible4: null,
       dialogFormVisible: null,
       foldData: false,
       dialogVisible: false,
@@ -562,8 +565,8 @@ export default {
         ssex: null,
         description: null,
         username: null,
-        brand: null,
-        store: null,
+        brandId: null,
+        storeId: null,
         roleId: null,
         userId: null,
         email: null,
@@ -676,16 +679,16 @@ export default {
     // 确定按钮
     confirmAdd () {
       // addform.province = selectedOptions
+      this.loading = true
       addUser(this.addform)
         .then((res) => {
+          this.loading = false
           if (res.data.code == 1) {
+            this.$message.success(res.data.message)
             this.initList()
             this.dialogFormVisible = false
-            this.$message({
-              message: res.data.message,
-              type: 'warning'
-            });
-
+          } else {
+            this.$message.error(res.data.message)
           }
         })
         .catch(err => {
@@ -700,7 +703,7 @@ export default {
     // 用户删除
     handleDelete (row) {
       // console.log(row)
-      this.$confirm('此操作将永久删除该楼层, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -731,7 +734,7 @@ export default {
 
     // 编辑用户
     handleEdit (index, row) {
-      // console.log(index)
+      console.log(index)
       this.initialize();
       this.editData.fullName = index.fullName
       this.editData.mobile = index.mobile
@@ -739,29 +742,48 @@ export default {
       this.editData.ssex = index.ssex
       this.editData.description = index.description
       this.editData.username = index.username
-      this.editData.brand = index.brand
-      this.editData.store = index.store
-      this.editData.roleName = index.roleName
+      this.editData.brandId = parseInt(index.brandId)
+      this.editData.storeId = parseInt(index.storeId)
+      this.editData.roleId = parseInt(index.roleId)
       this.editData.userId = index.userId
       this.editData.email = index.email
       this.editData.status = index.status
+      console.log(this.editData)
       // 获取角色下拉框
       getRoleSelect().then((res) => {
         this.roleSelectData = res.data
       })
       this.dialogFormVisible2 = true
-
+      //获取默认的门店数据
+      getHotelSelect(index.brandId).then((res) => {
+        // console.log(res)
+        if (res.data) {
+          this.hotelSelectData = res.data
+        } else {
+          this.$message({
+            message: '该品牌下没有门店',
+            type: 'warning'
+          });
+        }
+      })
     },
     // 编辑用户确认
     confirmEditD () {
       // console.log(this.editData);
+      this.loading = true
       editUser(this.editData).then(res => {
-        this.$message.success(res.data.message)
-        this.editData.brand = null,
-          this.editData.store = null,
-          this.editData.roleId = null,
+        this.loading = false
+        if (res.data.code == 1) {
+          this.$message.success(res.data.message)
+          this.editData.brand = null
+          this.editData.store = null
+          this.editData.roleId = null
           this.initList()
-        this.dialogFormVisible2 = false
+          this.dialogFormVisible2 = false
+        } else {
+          this.$message.error(res.data.message)
+        }
+
       })
     },
     // 查询按钮
@@ -776,10 +798,12 @@ export default {
       }
       // console.log(this.seekData)
       if (this.seekData) {
+        this.loading = true
         getUserList(this.seekData).then((res) => {
           // console.log(res)
           if (res.status === 200) {
             this.tableData = res.data.rows
+            this.loading = false
           }
         })
       } else {

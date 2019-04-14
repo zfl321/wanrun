@@ -5,9 +5,10 @@ import QS from 'qs'
 axios.defaults.withCredentials = true
 // console.log(axios.defaults)
 
-// axios.defaults.baseURL = 'http://172.16.106.35:9527'
+axios.defaults.baseURL = 'http://172.16.106.35:9527'
 // axios.defaults.baseURL = 'http://47.92.64.56:9527'
-axios.defaults.baseURL = 'http://192.168.1.41:9527'
+// axios.defaults.baseURL = 'http://192.168.1.41:9527'
+// axios.defaults.baseURL = 'http://35h5wk.natappfree.cc'
 // 登陆函数
 export const login = function (obj) {
   return axios.post('login', obj)
@@ -138,8 +139,8 @@ export const getEqSelect = () => axios.get('eq/list/')
 // 获取操作日志
 export const getLog = () => axios.get('log')
 // 获取设备类型
-export const getEqTypeSelect = () => axios.get('dict', {
-  params: { tableName: 'EQUIPMENT', fieldName: 'EQUIPMENT_TYPE' }
+export const getEqTypeSelect = () => axios.get('dict/list', {
+  params: { parentId: 'EQUIPMENT' }
 })
 
 
@@ -158,6 +159,8 @@ export const editFloor = obj => axios.put('floor', obj)
 export const editRoom = obj => axios.put('room', obj)
 // 设备编辑
 export const editEq = obj => axios.put('eq', obj)
+// 客房类型编辑
+export const editRoomType = obj => axios.put('roomType', obj)
 // 修改密码
 export const editpassword = obj => axios.put('/user/password', obj)
 

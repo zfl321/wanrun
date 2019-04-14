@@ -55,7 +55,7 @@
             <el-button @click="addBtn">新增</el-button>
           </el-col>
           <el-col :span="5" class="reset-button">
-            <el-button type="primary" @click="handleSearch">查询</el-button>
+            <el-button type="primary" @click="handleSearch" :loading="loading">查询</el-button>
             <el-button @click="reset">重置</el-button>
             <el-button plain class="my-icont" @click="foldData=!foldData">
               <div v-if="foldData">
@@ -146,7 +146,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible2 = false">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD">确 定</el-button>
+        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -175,7 +175,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -255,11 +255,13 @@ export default {
 
     // 初始化表格数据
     initList () {
+      this.loading = true
       getRoleList()
         .then(res => {
           if (res.status === 200) {
             this.tableData = res.data.rows
             localStorage.setItem('role', JSON.stringify(res.data.rows))
+            this.loading = false
             // 给totalNum赋值
             // this.totalNum = res.data.data.total
           }
@@ -270,19 +272,26 @@ export default {
       this.dialogFormVisible = true
       // 获取权限列表
       getRights().then(res => {
-        console.log(res);
+        // console.log(res);
         this.menuTreeData = res.data.rows.children
       })
     },
     // 确定按钮
     confirmAdd () {
+      this.loading = true
       this.addform.menuId = this.$refs.tree.getCheckedKeys().join(',')
-      console.log(this.addform)
+      // console.log(this.addform)
       addRole(this.addform)
         .then((res) => {
           // console.log(res)
-          this.initList()
-          this.dialogFormVisible = false
+          this.loading = false
+          if (res.data.code == 1) {
+            this.$message.success(res.data.message)
+            this.initList()
+            this.dialogFormVisible = false
+          } else {
+            this.$message.error(res.data.message)
+          }
         })
         .catch(err => {
           // console.log(err)
@@ -338,6 +347,7 @@ export default {
     // 编辑用户
     handleEdit (index, row) {
       // console.log(index);
+      this.loading = true
       this.dialogFormVisible2 = true
       getRights(index.roleId).then(res => {
         this.menuTreeData = res.data.rows.children
@@ -349,6 +359,7 @@ export default {
           this.editData.roleName = index.roleName
           this.editData.remark = index.remark
           this.editData.roleId = index.roleId
+          this.loading = false
           // this.editData.menuId = this.allTreeKeys
         })
       })
@@ -364,15 +375,20 @@ export default {
       // console.log(this.putData)
       // console.log(this.editData)
       editRole(this.putData).then(res => {
+        console.log(res)
         if (res.status === 200) {
+          this.loading = false
           this.dialogFormVisible2 = false
           this.initList()
-          this.loading = false
+          this.$message.success(res.data.message)
+        } else {
+          this.$message.error(res.data.message)
         }
       })
     },
     // 查询按钮
     handleSearch () {
+      this.loading = true
       if (this.createTime) {
         this.seekData.createTimeTo = this.createTime[1]
         this.seekData.createTimeFrom = this.createTime[0]
@@ -382,6 +398,7 @@ export default {
         // console.log(res)
         if (res.status === 200) {
           this.tableData = res.data.rows
+          this.loading = false
         }
       })
     },

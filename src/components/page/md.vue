@@ -1,5 +1,5 @@
 <template>
-  <div class="my-box">
+  <div class="my-box" v-loading="loading">
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">
@@ -60,10 +60,11 @@
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="brandName" label="品牌" width="100"></el-table-column>
             <el-table-column prop="name" label="门店" width="120"></el-table-column>
-            <el-table-column label="地址" width="260">
+            <el-table-column prop="hotelCode" label="门店编号" width="120"></el-table-column>
+            <el-table-column label="地址" width="350">
               <template
                 slot-scope="scope"
-              >{{ scope.row.province}}省{{scope.row.city}}市{{scope.row.district}}/{{scope.row.address }}</template>
+              >{{ scope.row.province}}省{{scope.row.city}}市{{scope.row.description}}/{{scope.row.address }}</template>
             </el-table-column>
             <el-table-column prop="description" label="描述"></el-table-column>
 
@@ -97,11 +98,11 @@
     <!-- 编辑的弹框 -->
     <el-dialog title="编辑门店" :visible.sync="dialogFormVisible2" class="astrict">
       <el-form :model="editData" :rules="myrules">
-        <el-form-item label="名称" prop="name" :label-width="formLabelWidth">
+        <el-form-item label="门店名称" prop="name" :label-width="formLabelWidth">
           <el-input v-model="editData.name" placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="描述" :label-width="formLabelWidth">
-          <el-input v-model="editData.description" placeholder="请输入内容"></el-input>
+        <el-form-item label="门店编号" prop="name" :label-width="formLabelWidth">
+          <el-input v-model="editData.hotelCode" placeholder="请输入内容"></el-input>
         </el-form-item>
         <el-form-item label="地址" prop="selectedOptions" :label-width="formLabelWidth">
           <template>
@@ -118,22 +119,19 @@
         <el-form-item label="详细地址" prop="address" :label-width="formLabelWidth">
           <el-input v-model="editData.address" placeholder="如：XX大道XX路XX号"></el-input>
         </el-form-item>
+        <el-form-item label="描述" :label-width="formLabelWidth">
+          <el-input v-model="editData.description" placeholder="请输入内容"></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD">确 定</el-button>
+        <el-button @click="dialogFormVisible2=false">取 消</el-button>
+        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
 
     <!-- 新增的弹框 -->
     <el-dialog title="新增门店" :visible.sync="dialogFormVisible" class="astrict">
       <el-form :model="addform" :rules="myrules">
-        <el-form-item label="名称" prop="name" :label-width="formLabelWidth">
-          <el-input v-model="addform.name" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="描述" :label-width="formLabelWidth">
-          <el-input v-model="addform.description" placeholder="请输入内容"></el-input>
-        </el-form-item>
         <el-form-item label="品牌" :label-width="formLabelWidth">
           <el-select v-model="addform.brandId" placeholder="请选择">
             <el-option
@@ -143,6 +141,12 @@
               :value="item.id"
             ></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="门店名称" prop="name" :label-width="formLabelWidth">
+          <el-input v-model="addform.name" placeholder="请输入内容"></el-input>
+        </el-form-item>
+        <el-form-item label="门店编号" prop="name" :label-width="formLabelWidth">
+          <el-input v-model="addform.hotelCode" placeholder="请输入内容"></el-input>
         </el-form-item>
         <el-form-item label="地址" prop="selectedOptions" :label-width="formLabelWidth">
           <template>
@@ -159,10 +163,13 @@
         <el-form-item label="详细地址" prop="address" :label-width="formLabelWidth">
           <el-input v-model="addform.address" placeholder="如：XX大道XX路XX号"></el-input>
         </el-form-item>
+        <el-form-item label="描述" :label-width="formLabelWidth">
+          <el-input v-model="addform.description" placeholder="请输入内容"></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -173,6 +180,7 @@ import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   data () {
     return {
+      loading: false,
       // 门店列表数据
       tableData: null,
       dialogFormVisible2: null,
@@ -187,12 +195,13 @@ export default {
       // 新增
       addform: {
         name: null,  //门店名称
+        hotelCode: null,  //门店编号
         description: null,   //门店描述
         brandId: null,   //品牌ID
         address: null,   //详细地址 
         province: null,   //省 
         // city: null,   //市 
-        // district: null,   //区 
+        // description: null,   //区 
       },
       brandSelectData: null,
       options: regionData,
@@ -200,6 +209,7 @@ export default {
       // 编辑
       editData: {
         name: null,  //门店名称
+        hotelCode: null,  //门店编号
         description: null,   //门店描述
         id: null,   //门店ID
         brandId: null,   //品牌ID
@@ -238,11 +248,14 @@ export default {
 
     // 初始化表格数据
     initList () {
+      this.loading = true
       getHotelList()
         .then(res => {
+          console.log(res)
           if (res.status === 200) {
             this.tableData = res.data.rows
             localStorage.setItem('role', JSON.stringify(res.data.rows))
+            this.loading = false
             // 给totalNum赋值
             // this.totalNum = res.data.data.total
           }
@@ -280,6 +293,7 @@ export default {
 
     // 确定按钮
     confirmAdd () {
+      this.loading = true
       // addform.province = selectedOptions
       var provincn = ""
       for (let i = 0; i < this.selectedOptions.length; i++) {
@@ -288,12 +302,19 @@ export default {
         provincn += provinc
       }
       this.addform.province = provincn
-      console.log(this.addform.province)
+      // console.log(this.addform.province)
       addHotel(this.addform)
         .then((res) => {
-          console.log(res)
-          this.initList()
-          this.dialogFormVisible = false
+          // console.log(res)
+          this.loading = false
+          if (res.data.code == 1) {
+            this.initList()
+            this.dialogFormVisible = false
+            this.tableData = res.data.rows
+            this.$message.success(res.data.message);
+          } else {
+            this.$message.error(res.data.message);
+          }
         })
         .catch(err => {
           console.log(err)
@@ -341,6 +362,7 @@ export default {
       console.log(index)
       this.editData.province = this.selectedOptions
       this.editData.name = index.name
+      this.editData.hotelCode = index.hotelCode
       this.editData.description = index.description
       this.editData.brandId = index.brandId
       this.editData.id = index.id
@@ -351,21 +373,28 @@ export default {
     },
     // 编辑门店确认
     confirmEditD () {
-      console.log(this.editData);
+      // console.log(this.editData);
+      this.loading = true
       editHotel(this.editData).then(res => {
-        this.dialogFormVisible2 = false
-        console.log(res)
+        // console.log(res)
+        this.loading = false
+        if (res.data.code == 1) {
+          this.$message.success(res.data.message)
+          this.initList()
+          this.dialogFormVisible2 = false
+        } else {
+          this.$message.error(res.data.message)
+        }
       })
     },
     // 查询按钮
     handleSearch () {
-      console.log(this.seekData.brandId)
+      this.loading = true
+      // console.log(this.seekData.brandId)
       if (this.seekData.brandId) {
         getHotelSeek(this.seekData).then((res) => {
-          console.log(res)
-          if (res.status === 200) {
-            this.tableData = res.data.rows
-          }
+          this.tableData = res.data.rows
+          this.loading = false
         })
       } else {
         this.initList()

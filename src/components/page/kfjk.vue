@@ -1,5 +1,5 @@
 <template>
-  <div class="my-box">
+  <div class="my-box" v-loading="loading">
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">

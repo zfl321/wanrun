@@ -19,7 +19,7 @@
           </el-input>
         </el-form-item>
         <div class="login-btn">
-          <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')" :loading="loading">登录</el-button>
         </div>
         <!-- <p class="login-tips">Tips : 暂时用户名和密码随便填。</p> -->
       </el-form>
@@ -32,6 +32,7 @@ import { login } from '@/api'
 export default {
   data: function () {
     return {
+      loading: false,
       ruleForm: {
         username: 'admin',
         password: '123456.'
@@ -50,9 +51,11 @@ export default {
     submitForm (formName) {
       this.$refs[formName].validate(isOk => {
         if (isOk) {
+          this.loading = true
           login({ username: this.ruleForm.username, password: this.ruleForm.password })
             .then(res => {
               // console.log(res)
+              this.loading = false
               if (res.data.message === "认证成功") {
                 this.$message.success('登陆成功')
                 // 将登录成功后的token保存到localStorage中

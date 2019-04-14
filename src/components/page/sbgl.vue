@@ -1,5 +1,5 @@
 <template>
-  <div class="my-box">
+  <div class="my-box" v-loading="loading">
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">
@@ -78,7 +78,7 @@
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="eqType" label="设备类型" width="120"></el-table-column>
+            <el-table-column prop="eqTypeName" label="设备类型" width="120"></el-table-column>
             <el-table-column prop="eqName" label="设备名称" width="120"></el-table-column>
             <el-table-column prop="hardwareId" label="硬件id" width="120"></el-table-column>
             <el-table-column prop="describes" label="描述"></el-table-column>
@@ -119,7 +119,7 @@
               v-for="(item,index) in eqTypeSelectData"
               :key="index"
               :label="item.valuee"
-              :value="item.dictId"
+              :value="item.keyy"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -141,12 +141,12 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD">确 定</el-button>
+        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
 
     <!-- 新增的弹框 -->
-    <el-dialog title="新增客房" :visible.sync="dialogFormVisible" class="astrict">
+    <el-dialog title="新增设备" :visible.sync="dialogFormVisible" class="astrict">
       <el-form :model="addform" :rules="myrules">
         <el-form-item label="设备类型" :label-width="formLabelWidth">
           <el-select v-model="addform.eqType" clearable placeholder="请选择">
@@ -154,7 +154,7 @@
               v-for="(item,index) in eqTypeSelectData"
               :key="index"
               :label="item.valuee"
-              :value="item.dictId"
+              :value="item.keyy"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -170,7 +170,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -181,6 +181,7 @@ import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   data () {
     return {
+      loading: false,
       // 建筑列表数据
       tableData: null,
       dialogFormVisible2: null,
@@ -190,7 +191,8 @@ export default {
       formLabelWidth: '100px',
       // 查询的数据
       seekData: {
-        eqType: null,   //设备类型
+        eqType: null,   //设备类型id
+        eqTypeName: null,   //设备类型
         eqId: null,   //设备名称
         hardwareId: null,   //硬件id
       },
@@ -249,10 +251,12 @@ export default {
 
     // 初始化表格数据
     initList () {
+      this.loading = true
       getEqlList().then(res => {
         // console.log(res)
         if (res.status === 200) {
           this.tableData = res.data.rows
+          this.loading = false
         }
       })
     },
@@ -262,8 +266,8 @@ export default {
     initialize () {
       getEqTypeSelect().then((res) => {
         if (res.status === 200) {
-          this.eqTypeSelectData = res.data.rows
-          console.log(res)
+          this.eqTypeSelectData = res.data
+          // console.log(res)
         }
       })
 
@@ -286,21 +290,17 @@ export default {
     // 确定按钮
     confirmAdd () {
       // addform.province = selectedOptions
-      console.log(this.addform)
+      // console.log(this.addform)
+      this.loading = true
       addEq(this.addform)
         .then((res) => {
+          this.loading = false
           if (res.data.code == 1) {
+            this.$message.success(res.data.message)
             this.initList()
             this.dialogFormVisible = false
-            this.$message({
-              message: res.data.message,
-              type: 'warning'
-            });
           } else {
-            this.$message({
-              message: res.data.message,
-              type: 'warning'
-            });
+            this.$message.error(res.data.message)
           }
         })
         .catch(err => {
@@ -346,6 +346,7 @@ export default {
 
     // 编辑楼层
     handleEdit (index, row) {
+      console.log(index);
       this.initialize()
       this.editData.eqType = index.eqType
       this.editData.eqName = index.eqName
@@ -357,20 +358,29 @@ export default {
     },
     // 编辑楼层确认
     confirmEditD () {
-      console.log(this.editData);
+      // console.log(this.editData);
+      this.loading = true
       editEq(this.editData).then(res => {
-        this.dialogFormVisible2 = false
-        // console.log(res)
+        this.loading = false
+        if (res.data.code == 1) {
+          this.$message.success(res.data.message)
+          this.initList()
+          this.dialogFormVisible2 = false
+        } else {
+          this.$message.error(res.data.message)
+        }
       })
     },
     // 查询按钮
     handleSearch () {
-      console.log(this.seekData)
+      // console.log(this.seekData)
       if (this.seekData) {
-        getBoomTypelList(this.seekData).then((res) => {
-          console.log(res)
+        this.loading = true
+        getEqlList(this.seekData).then((res) => {
+          // console.log(res)
           if (res.status === 200) {
             this.tableData = res.data.rows
+            this.loading = false
           }
         })
       } else {

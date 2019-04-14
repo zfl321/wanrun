@@ -1,5 +1,5 @@
 <template>
-  <div class="my-box">
+  <div class="my-box" v-loading="loading">
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">
@@ -77,11 +77,11 @@
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="brandName" label="品牌" width="120"></el-table-column>
             <el-table-column prop="typeName" label="房间类型" width="120"></el-table-column>
-            <el-table-column prop="eqType" label="设备类型" width="120"></el-table-column>
+            <el-table-column prop="eqTypeName" label="设备类型" width="120"></el-table-column>
             <el-table-column prop="eqName" label="设备名称" width="120"></el-table-column>
             <el-table-column prop="eqCode" label="设备编号" width="120"></el-table-column>
             <el-table-column prop="hardwareId" label="硬件id" width="120"></el-table-column>
-            <el-table-column prop="loopNUmber" label="回路编号"></el-table-column>
+            <el-table-column prop="loopNumber" label="回路编号"></el-table-column>
 
             <!-- 操作按钮列 -->
             <el-table-column label="操作" width="130">
@@ -111,34 +111,70 @@
       </el-card>
     </el-row>
     <!-- 编辑的弹框 -->
-    <el-dialog title="编辑建筑" :visible.sync="dialogFormVisible2" class="astrict">
+    <el-dialog title="编辑房类型" :visible.sync="dialogFormVisible2" class="astrict">
       <el-form :model="editData" :rules="myrules">
-        <el-form-item label="名称" prop="name" :label-width="formLabelWidth">
-          <el-input v-model="editData.name" placeholder="请输入内容"></el-input>
+        <el-form-item label="品牌" :label-width="formLabelWidth">
+          <el-select v-model="editData.brandId" clearable placeholder="请选择">
+            <el-option
+              v-for="(item,index) in brandSelectData"
+              :key="index"
+              :label="item.brandName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="描述" :label-width="formLabelWidth">
-          <el-input v-model="editData.description" placeholder="请输入内容"></el-input>
+        <el-form-item label="房间类型" prop="typeName" :label-width="formLabelWidth">
+          <el-input v-model="editData.typeName" placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="地址" prop="selectedOptions" :label-width="formLabelWidth">
-          <template>
-            <div class="block">
-              <el-cascader size="large" :options="options" v-model="selectedOptions"></el-cascader>
-            </div>
-          </template>
+        <el-form-item label="设备编号" prop="roomNumber" :label-width="formLabelWidth">
+          <el-input v-model="editData.eqCode" placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="详细地址" prop="address" :label-width="formLabelWidth">
-          <el-input v-model="editData.address" placeholder="如：XX大道XX路XX号"></el-input>
+        <el-form-item label="设备类型" prop="mainBoardIp" :label-width="formLabelWidth">
+          <el-select v-model="editData.eqType" clearable placeholder="请选择">
+            <el-option
+              v-for="(item,index) in eqTypeSelectData"
+              :key="index"
+              :label="item.valuee"
+              :value="item.keyy"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="设备" :label-width="formLabelWidth">
+          <el-select v-model="editData.eqId" clearable placeholder="请选择">
+            <el-option
+              v-for="(item,index) in eqSelectData"
+              :key="index"
+              :label="item.eqName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="硬件id" :label-width="formLabelWidth">
+          <el-input v-model="editData.hardwareId" placeholder="请输入内容"></el-input>
+        </el-form-item>
+        <el-form-item label="回路编号" :label-width="formLabelWidth">
+          <el-input v-model="editData.loopNumber" placeholder="请输入内容"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD">确 定</el-button>
+        <el-button @click="dialogFormVisible2=false">取 消</el-button>
+        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
 
     <!-- 新增的弹框 -->
     <el-dialog title="新增客房类型" :visible.sync="dialogFormVisible" class="astrict">
       <el-form :model="addform" :rules="myrules">
+        <el-form-item label="品牌" :label-width="formLabelWidth">
+          <el-select v-model="addform.brandId" clearable placeholder="请选择">
+            <el-option
+              v-for="(item,index) in brandSelectData"
+              :key="index"
+              :label="item.brandName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="房间类型" prop="typeName" :label-width="formLabelWidth">
           <el-input v-model="addform.typeName" placeholder="请输入内容"></el-input>
         </el-form-item>
@@ -151,7 +187,7 @@
               v-for="(item,index) in eqTypeSelectData"
               :key="index"
               :label="item.valuee"
-              :value="item.dictId"
+              :value="item.keyy"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -169,32 +205,23 @@
           <el-input v-model="addform.hardwareId" placeholder="请输入内容"></el-input>
         </el-form-item>
         <el-form-item label="回路编号" :label-width="formLabelWidth">
-          <el-input v-model="addform.loopNUmber" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="品牌" :label-width="formLabelWidth">
-          <el-select v-model="addform.brandId" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in brandSelectData"
-              :key="index"
-              :label="item.brandName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
+          <el-input v-model="addform.loopNumber" placeholder="请输入内容"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import { getBoomTypelList, getEqSelect, getEqTypeSelect, addRoomType, getFloorSelect, getHotelSelect, getBoomTypelSelect, getBuildingSelect, delRoomType, getRights, getBrandSelect, editHotel, getHotelSeek } from '@/api'
+import { getBoomTypelList, getEqSelect, getEqTypeSelect, addRoomType, getFloorSelect, getHotelSelect, getBoomTypelSelect, getBuildingSelect, delRoomType, getRights, getBrandSelect, editRoomType, getHotelSeek } from '@/api'
 import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   data () {
     return {
+      loading: false,
       // 建筑列表数据
       tableData: null,
       dialogFormVisible2: null,
@@ -217,7 +244,7 @@ export default {
         eqType: null,   //设备类型
         eqId: null,   //设备名称
         hardwareId: null,   //硬件id
-        loopNUmber: null,   //回路编号
+        loopNumber: null,   //回路编号
       },
       // 下拉框的数据
       brandSelectData: null,
@@ -231,12 +258,13 @@ export default {
       selectedOptions: [],
       // 编辑
       editData: {
-        name: null,  //建筑名称
-        description: null,   //建筑描述
-        id: null,   //建筑ID
-        brandId: null,   //品牌ID
-        address: null,   //详细地址 
-        province: null,   //省 
+        brandId: null,  //品牌
+        typeName: null,   //房间类型
+        eqCode: null,   //设备编号
+        eqType: null,   //设备类型
+        eqId: null,   //设备名称
+        hardwareId: null,   //硬件id
+        loopNumber: null,   //回路编号
       },
       myrules: {
         typeName: [
@@ -268,10 +296,12 @@ export default {
 
     // 初始化表格数据
     initList () {
+      this.loading = true
       getBoomTypelList().then(res => {
         // console.log(res)
         if (res.status === 200) {
           this.tableData = res.data.rows
+          this.loading = false
         }
       })
     },
@@ -287,7 +317,7 @@ export default {
       })
       getEqTypeSelect().then((res) => {
         if (res.status === 200) {
-          this.eqTypeSelectData = res.data.rows
+          this.eqTypeSelectData = res.data
           console.log(res)
         }
       })
@@ -371,21 +401,17 @@ export default {
     // 确定按钮
     confirmAdd () {
       // addform.province = selectedOptions
-      console.log(this.addform)
+      // console.log(this.addform)
+      this.loading = true
       addRoomType(this.addform)
         .then((res) => {
+          this.loading = false
           if (res.data.code == 1) {
+            this.$message.success(res.data.message)
             this.initList()
             this.dialogFormVisible = false
-            this.$message({
-              message: res.data.message,
-              type: 'warning'
-            });
           } else {
-            this.$message({
-              message: res.data.message,
-              type: 'warning'
-            });
+            this.$message.error(res.data.message)
           }
         })
         .catch(err => {
@@ -432,22 +458,34 @@ export default {
     // 编辑楼层
     handleEdit (index, row) {
       console.log(index)
-      this.editData.province = this.selectedOptions
-      this.editData.name = index.name
-      this.editData.description = index.description
-      this.editData.brandId = index.brandId
-      this.editData.id = index.id
-      this.editData.address = index.address
-      this.editData.province = index.province
+      // console.log(brandName)
+      this.editData.brandId = parseInt(index.brandId)
+      this.editData.typeName = index.typeName
+      this.editData.eqCode = index.eqCode
+      this.editData.eqType = index.eqType
+      this.editData.eqId = parseInt(index.eqId)
+      this.editData.hardwareId = index.hardwareId
+      this.editData.loopNumber = index.loopNumber
       this.dialogFormVisible2 = true
-
+      this.initialize();
+      getEqSelect().then((res) => {
+        // console.log(res)
+        this.eqSelectData = res.data
+      })
     },
-    // 编辑楼层确认
+    // 编辑确认
     confirmEditD () {
-      console.log(this.editData);
-      editHotel(this.editData).then(res => {
-        this.dialogFormVisible2 = false
-        console.log(res)
+      // console.log(this.editData);
+      this.loading = true
+      editRoomType(this.editData).then(res => {
+        this.loading = false
+        if (res.data.code == 1) {
+          this.$message.success(res.data.message)
+          this.initList()
+          this.dialogFormVisible2 = false
+        } else {
+          this.$message.error(res.data.message)
+        }
       })
     },
     // 查询按钮

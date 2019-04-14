@@ -1,5 +1,5 @@
 <template>
-  <div class="my-box">
+  <div class="my-box" v-loading="loading">
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">
@@ -127,7 +127,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible2 = false">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD">确 定</el-button>
+        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -173,7 +173,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -184,6 +184,7 @@ import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   data () {
     return {
+      loading: false,
       // 建筑列表数据
       tableData: null,
       dialogFormVisible2: null,
@@ -247,10 +248,12 @@ export default {
 
     // 初始化表格数据
     initList () {
+      this.loading = true
       getFloorlList().then(res => {
         console.log(res)
         if (res.status === 200) {
           this.tableData = res.data.rows
+          this.loading = false
         }
       })
     },
@@ -314,16 +317,16 @@ export default {
     // 确定按钮
     confirmAdd () {
       // addform.province = selectedOptions
+      this.loading = true
       addFloor(this.addform)
         .then((res) => {
+          this.loading = false
           if (res.data.code == 1) {
+            this.$message.success(res.data.message)
             this.initList()
             this.dialogFormVisible = false
-            this.$message({
-              message: res.data.message,
-              type: 'warning'
-            });
-
+          } else {
+            this.$message.error(res.data.message)
           }
         })
         .catch(err => {
@@ -378,24 +381,29 @@ export default {
     },
     // 编辑楼层确认
     confirmEditD () {
-      console.log(this.editData);
+      // console.log(this.editData);
+      this.loading = true
       editFloor(this.editData).then(res => {
-        this.initList()
-        this.$message({
-          message: res.data.message,
-          type: 'success'
-        });
-        this.dialogFormVisible2 = false
+        this.loading = false
+        if (res.data.code == 1) {
+          this.$message.success(res.data.message)
+          this.initList()
+          this.dialogFormVisible2 = false
+        } else {
+          this.$message.error(res.data.message)
+        }
       })
     },
     // 查询按钮
     handleSearch () {
-      console.log(this.seekData)
+      // console.log(this.seekData)
       if (this.seekData) {
+        this.loading = true
         getFloorlList(this.seekData).then((res) => {
-          console.log(res)
+          // console.log(res)
           if (res.status === 200) {
             this.tableData = res.data.rows
+            this.loading = false
           }
         })
       } else {

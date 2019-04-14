@@ -1,5 +1,5 @@
 <template>
-  <div class="my-box">
+  <div class="my-box" v-loading="loading">
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">
@@ -108,7 +108,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD">确 定</el-button>
+        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -130,7 +130,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -140,6 +140,7 @@ import { getBrandList, addBrand, delBrand, getRights, getBrandSelect, getBrandSe
 export default {
   data () {
     return {
+      loading: false,
       // 品牌列表数据
       tableData: [],
       dialogFormVisible2: null,
@@ -189,11 +190,13 @@ export default {
 
     // 初始化表格数据
     initList () {
+      this.loading = true
       getBrandList()
         .then(res => {
           if (res.status === 200) {
             this.tableData = res.data.rows
             localStorage.setItem('role', JSON.stringify(res.data.rows))
+            this.loading = false
             // 给totalNum赋值
             // this.totalNum = res.data.data.total
           }
@@ -222,12 +225,19 @@ export default {
     },
     // 确定按钮
     confirmAdd () {
-      console.log(this.addform)
+      this.loading = true
+      // console.log(this.addform)
       addBrand(this.addform)
         .then((res) => {
-          console.log(res)
-          this.initList()
-          this.dialogFormVisible = false
+          // console.log(res)
+          this.loading = false
+          if (res.data.code == 1) {
+            this.$message.success(res.data.message)
+            this.initList()
+            this.dialogFormVisible = false
+          } else {
+            this.$message.error(res.data.message)
+          }
         })
         .catch(err => {
           console.log(err)
@@ -240,17 +250,17 @@ export default {
 
     // 删除品牌
     handleDelete (row) {
-      console.log(row)
+      // console.log(row)
       this.$confirm('此操作将永久删除该品牌, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         // 点击确定执行的操作
-        console.log(row.id)
+        // console.log(row.id)
         delBrand(row.id)
           .then(res => {
-            console.log(res)
+            // console.log(res)
             if (res.data.code == 1) {
               this.$message.success(res.data.message)
               this.initList()
@@ -285,14 +295,16 @@ export default {
     },
     // 编辑品牌确认
     confirmEditD () {
+      this.loading = true
       editBrand(this.editData).then(res => {
-        if (res.data.code) {
-          this.dialogFormVisible2 = false
+        if (res.data.code == 1) {
+          this.$message.success(res.data.message)
+          this.loading = false
           this.initList()
-          this.$message({
-            message: res.data.message,
-            type: 'success'
-          });
+          this.dialogFormVisible2 = false
+        } else {
+          this.loading = false
+          this.$message.error(res.data.message)
         }
       })
     },

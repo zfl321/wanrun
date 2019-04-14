@@ -1,5 +1,5 @@
 <template>
-  <div class="my-box">
+  <div class="my-box" v-loading="loading">
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">
@@ -111,11 +111,12 @@
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="brandName" label="品牌" width="150"></el-table-column>
-            <el-table-column prop="hotelName" label="门店" width="150"></el-table-column>
-            <el-table-column prop="buildingName" label="建筑" width="150"></el-table-column>
-            <el-table-column prop="floorName" label="楼层" width="150"></el-table-column>
-            <el-table-column prop="roomNumber" label="房间号" width="150"></el-table-column>
+            <el-table-column prop="brandName" label="品牌" width="120"></el-table-column>
+            <el-table-column prop="hotelName" label="门店" width="120"></el-table-column>
+            <el-table-column prop="buildingName" label="建筑" width="120"></el-table-column>
+            <el-table-column prop="floorName" label="楼层" width="100"></el-table-column>
+            <el-table-column prop="roomTypeName" label="房间类型" width="120"></el-table-column>
+            <el-table-column prop="roomNumber" label="房间号" width="100"></el-table-column>
             <el-table-column prop="mainBoardIp" label="主板ip" width="150"></el-table-column>
             <el-table-column prop="remark" label="描述"></el-table-column>
 
@@ -147,27 +148,12 @@
       </el-card>
     </el-row>
     <!-- 编辑的弹框 -->
-    <el-dialog title="编辑楼层" :visible.sync="dialogFormVisible2" class="astrict">
+    <el-dialog title="编辑客房" :visible.sync="dialogFormVisible2" class="astrict">
       <el-form :model="editData" :rules="myrules">
-        <el-form-item label="房间号码" prop="name" :label-width="formLabelWidth">
-          <el-input v-model="editData.roomNumber" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="描述" :label-width="formLabelWidth">
-          <el-input v-model="editData.remark" placeholder="请输入内容"></el-input>
-        </el-form-item>
         <el-form-item label="主板IP" :label-width="formLabelWidth">
           <el-input v-model="editData.mainBoardIp" placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="品牌" :label-width="formLabelWidth">
-          <el-select v-model="brandId" @change="selectOne" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in brandSelectData"
-              :key="index"
-              :label="item.brandName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
+
         <el-form-item label="房间类型" :label-width="formLabelWidth">
           <el-select v-model="editData.roomType" clearable placeholder="请选择">
             <el-option
@@ -178,25 +164,22 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="房间号码" prop="name" :label-width="formLabelWidth">
+          <el-input v-model="editData.roomNumber" placeholder="请输入内容"></el-input>
+        </el-form-item>
+        <el-form-item label="描述" :label-width="formLabelWidth">
+          <el-input v-model="editData.remark" placeholder="请输入内容"></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD">确 定</el-button>
+        <el-button @click="dialogFormVisible2=false">取 消</el-button>
+        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
 
     <!-- 新增的弹框 -->
     <el-dialog title="新增客房" :visible.sync="dialogFormVisible" class="astrict">
       <el-form :model="addform" :rules="myrules">
-        <el-form-item label="房间号" prop="roomNumber" :label-width="formLabelWidth">
-          <el-input v-model="addform.roomNumber" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="主板ip" prop="mainBoardIp" :label-width="formLabelWidth">
-          <el-input v-model="addform.mainBoardIp" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="描述" :label-width="formLabelWidth">
-          <el-input v-model="addform.remark" placeholder="请输入内容"></el-input>
-        </el-form-item>
         <el-form-item label="品牌" :label-width="formLabelWidth">
           <el-select v-model="brandId" @change="selectOne" clearable placeholder="请选择">
             <el-option
@@ -247,10 +230,19 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="房间号" prop="roomNumber" :label-width="formLabelWidth">
+          <el-input v-model="addform.roomNumber" placeholder="请输入内容"></el-input>
+        </el-form-item>
+        <el-form-item label="主板ip" prop="mainBoardIp" :label-width="formLabelWidth">
+          <el-input v-model="addform.mainBoardIp" placeholder="请输入内容"></el-input>
+        </el-form-item>
+        <el-form-item label="描述" :label-width="formLabelWidth">
+          <el-input v-model="addform.remark" placeholder="请输入内容"></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -261,6 +253,7 @@ import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   data () {
     return {
+      loading: false,
       // 建筑列表数据
       tableData: null,
       dialogFormVisible2: null,
@@ -331,10 +324,12 @@ export default {
 
     // 初始化表格数据
     initList () {
+      this.loading = true
       getRoomlList().then(res => {
-        console.log(res)
+        // console.log(res)
         if (res.status === 200) {
           this.tableData = res.data.rows
+          this.loading = false
         }
       })
     },
@@ -345,7 +340,7 @@ export default {
       getBrandSelect().then((res) => {
         if (res.status === 200) {
           this.brandSelectData = res.data
-          // console.log(res)
+          console.log(res)
         }
       })
     },
@@ -420,20 +415,16 @@ export default {
     // 确定按钮
     confirmAdd () {
       // addform.province = selectedOptions
+      this.loading = true
       addRoom(this.addform)
         .then((res) => {
+          this.loading = false
           if (res.data.code == 1) {
+            this.$message.success(res.data.message)
             this.initList()
             this.dialogFormVisible = false
-            this.$message({
-              message: res.data.message,
-              type: 'warning'
-            });
           } else {
-            this.$message({
-              message: res.data.message,
-              type: 'warning'
-            });
+            this.$message.error(res.data.message)
           }
         })
         .catch(err => {
@@ -480,9 +471,16 @@ export default {
     // 编辑楼层
     handleEdit (index, row) {
       console.log(index)
-      this.initialize();
+      // 获取房间类型下拉框
+      getBoomTypelSelect(index.brandId).then((res) => {
+        if (res.status === 200) {
+          this.roomTypeSelectData = res.data
+          // console.log(res)
+        }
+      })
       this.editData.mainBoardIp = index.mainBoardIp
       this.editData.remark = index.remark
+      this.editData.roomType = index.roomType
       this.editData.roomNumber = index.roomNumber
       // this.editData.id = index.id
       this.dialogFormVisible2 = true
@@ -490,20 +488,29 @@ export default {
     },
     // 编辑楼层确认
     confirmEditD () {
-      console.log(this.editData);
+      // console.log(this.editData);
+      this.loading = true
       editRoom(this.editData).then(res => {
-        this.dialogFormVisible2 = false
-        console.log(res)
+        this.loading = false
+        if (res.data.code == 1) {
+          this.$message.success(res.data.message)
+          this.initList()
+          this.dialogFormVisible2 = false
+        } else {
+          this.$message.error(res.data.message)
+        }
       })
     },
     // 查询按钮
     handleSearch () {
-      console.log(this.seekData)
+      // console.log(this.seekData)
+      this.loading = true
       if (this.seekData) {
         getRoomlList(this.seekData).then((res) => {
-          console.log(res)
+          // console.log(res)
           if (res.status === 200) {
             this.tableData = res.data.rows
+            this.loading = false
           }
         })
       } else {
