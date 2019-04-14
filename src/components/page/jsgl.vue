@@ -53,6 +53,7 @@
         <el-row>
           <el-col :span="19">
             <el-button @click="addBtn">新增</el-button>
+            <el-button @click="batchesDelete">批量删除</el-button>
           </el-col>
           <el-col :span="5" class="reset-button">
             <el-button type="primary" @click="handleSearch" :loading="loading">查询</el-button>
@@ -185,6 +186,7 @@ import { getRoleList, addRole, delRole, getRights, getRightsId, editRole } from 
 export default {
   data () {
     return {
+      multipleSelection: [],
       // 角色列表数据
       tableData: [],
       dialogFormVisible2: null,
@@ -305,7 +307,7 @@ export default {
     // 删除用户
     handleDelete (row) {
       console.log(row)
-      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该角色, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -329,7 +331,47 @@ export default {
         })
       })
     },
-
+    // 批量删除
+    batchesDelete () {
+      if (this.multipleSelection.length != 0) {
+        // 把要删除的角色ID以字符串拼接
+        let number = ""
+        for (let i = 0; i < this.multipleSelection.length; i++) {
+          const element = this.multipleSelection[i];
+          number += element.roleId + ","
+        }
+        number = number.slice(0, number.length - 1)  //去掉最后的逗号
+        this.$confirm('此操作将永久删除角色, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.loading = true
+          delRole(number)
+            .then(res => {
+              this.loading = false
+              if (res.data.code == 1) {
+                this.$message.success("删除成功")
+                this.initList()
+              } else {
+                this.$message.error("删除失败")
+              }
+            })
+        }).catch(() => {
+          this.loading = false
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+      } else {
+        this.$message.warning("请先选择要删除的数据")
+      }
+    },
+    handleSelectionChange (val) {
+      this.multipleSelection = val;
+      console.log(val)
+    },
     // 点击查看用户详情
     handleDetails (row) {
       this.dialogVisible = true
