@@ -1,13 +1,14 @@
 // 这个文件用来封装接口，发送请求
 import axios from 'axios'
 import QS from 'qs'
+import { MessageBox } from 'element-ui';
 // 请求携带cookie
 axios.defaults.withCredentials = true
 // console.log(axios.defaults)
 
 // axios.defaults.baseURL = 'http://172.16.106.35:9527'
-axios.defaults.baseURL = 'http://47.92.64.56:9527'
-// axios.defaults.baseURL = 'http://192.168.1.41:9527'
+// axios.defaults.baseURL = 'http://47.92.64.56:9527'
+axios.defaults.baseURL = 'http://192.168.1.51:9527'
 // axios.defaults.baseURL = 'http://35h5wk.natappfree.cc'
 // 登陆函数
 export const login = function (obj) {
@@ -78,7 +79,7 @@ export const addCate = obj => axios.post('categories', obj)
 // 品牌列表
 export const getBrandList = () => axios.get('brand')
 // 品牌查询
-export const getBrandSeek = (id) => axios.get(`brand/${id}`)
+export const getBrandSeek = (obj) => axios.get('brand/', { params: obj })
 
 
 // 门店列表
@@ -211,10 +212,14 @@ axios.interceptors.response.use((config) => {
         // console.log(errorMessage + '401')
         // console.log(Vue.prototype)
         // Vue.prototype.$message.error('很抱歉，您无法访问该资源，可能是因为没有相应权限或者登录已失效');
-        this.$notify.error({
-          title: '错误',
-          message: '这是一条错误的提示消息'
-        });
+
+        // MessageBox.$alert('登陆失效，请重新登陆', '错误提示', {
+        //   confirmButtonText: '确定',
+        //   callback: action => {
+        window.location.href = '#/login'
+
+        //   }
+        // });
         break
       default:
         console.log(errorMessage)

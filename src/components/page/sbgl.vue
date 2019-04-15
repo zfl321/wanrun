@@ -107,7 +107,15 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination>
+          <el-pagination
+            background
+            layout="prev, pager, next, sizes, total, jumper"
+            :page-sizes="[5, 10, 15, 20]"
+            :page-size="seekData.pageSize"
+            :total="total"
+            @current-change="handleCurrentChange"
+            @size-change="handleSizeChange"
+          ></el-pagination>
         </div>
       </el-card>
     </el-row>
@@ -192,11 +200,14 @@ export default {
       dialogVisible: false,
       formLabelWidth: '100px',
       // 查询的数据
+      total: null,
       seekData: {
         eqType: null,   //设备类型id
         eqTypeName: null,   //设备类型
         eqId: null,   //设备名称
         hardwareId: null,   //硬件id
+        pageSize: 10,
+        pageNum: 1
       },
       hotelId: null,
       brandId: null,
@@ -252,12 +263,13 @@ export default {
   methods: {
 
     // 初始化表格数据
-    initList () {
+    initList (obj) {
       this.loading = true
-      getEqlList().then(res => {
+      getEqlList(obj).then(res => {
         // console.log(res)
         if (res.status === 200) {
           this.tableData = res.data.rows
+          this.total = res.data.total
           this.loading = false
         }
       })
@@ -428,7 +440,15 @@ export default {
       }
 
     },
-
+    //分页
+    handleCurrentChange (cpage) {
+      this.putData.pageNum = cpage;
+      this.initList(this.putData)
+    },
+    handleSizeChange (psize) {
+      this.putData.pageSize = psize;
+      this.initList(this.putData)
+    }
 
 
   }

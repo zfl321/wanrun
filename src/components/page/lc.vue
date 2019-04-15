@@ -112,7 +112,15 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination>
+          <el-pagination
+            background
+            layout="prev, pager, next, sizes, total, jumper"
+            :page-sizes="[5, 10, 15, 20]"
+            :page-size="seekData.pageSize"
+            :total="total"
+            @current-change="handleCurrentChange"
+            @size-change="handleSizeChange"
+          ></el-pagination>
         </div>
       </el-card>
     </el-row>
@@ -195,8 +203,11 @@ export default {
       dialogVisible: false,
       formLabelWidth: '100px',
       // 查询的数据
+      total: null,
       seekData: {
         buildingId: null,
+        pageSize: 10,
+        pageNum: 1
       },
       hotelId: null,
       brandId: null,
@@ -249,12 +260,13 @@ export default {
   methods: {
 
     // 初始化表格数据
-    initList () {
+    initList (obj) {
       this.loading = true
-      getFloorlList().then(res => {
+      getFloorlList(obj).then(res => {
         console.log(res)
         if (res.status === 200) {
           this.tableData = res.data.rows
+          this.total = res.data.total
           this.loading = false
         }
       })
@@ -455,6 +467,15 @@ export default {
       this.seekData.buildingId = null
       this.hotelId = null
       this.brandId = null
+    },
+    //分页
+    handleCurrentChange (cpage) {
+      this.seekData.pageNum = cpage;
+      this.initList(this.seekData)
+    },
+    handleSizeChange (psize) {
+      this.seekData.pageSize = psize;
+      this.initList(this.seekData)
     }
 
 

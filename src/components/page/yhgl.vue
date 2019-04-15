@@ -184,7 +184,15 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination>
+          <el-pagination
+            background
+            layout="prev, pager, next, sizes, total, jumper"
+            :page-sizes="[5, 10, 15, 20]"
+            :page-size="seekData.pageSize"
+            :total="total"
+            @current-change="handleCurrentChange"
+            @size-change="handleSizeChange"
+          ></el-pagination>
         </div>
       </el-card>
     </el-row>
@@ -537,6 +545,7 @@ export default {
       dialogVisible: false,
       formLabelWidth: '100px',
       // 查询的数据
+      total: null,
       seekData: {
         brand: null,  //品牌
         store: null,   //门店
@@ -548,6 +557,8 @@ export default {
         createTimeFrom: null,
         createTimeTo: null,
         createUser: null,
+        pageSize: 10,
+        pageNum: 1
       },
       createTime: null,
       lastLoginTime: null,
@@ -622,11 +633,12 @@ export default {
   methods: {
 
     // 初始化表格数据
-    initList () {
-      getUserList().then(res => {
+    initList (obj) {
+      getUserList(obj).then(res => {
         // console.log(res)
         if (res.status === 200) {
           this.tableData = res.data.rows
+          this.total = res.data.total
         }
       })
     },
@@ -910,6 +922,15 @@ export default {
       this.gridData = row
       console.log(this.gridData)
       this.dialogTableVisible4 = true
+    },
+    //分页
+    handleCurrentChange (cpage) {
+      this.seekData.pageNum = cpage;
+      this.initList(this.seekData)
+    },
+    handleSizeChange (psize) {
+      this.seekData.pageSize = psize;
+      this.initList(this.seekData)
     }
 
   }

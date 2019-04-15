@@ -99,7 +99,15 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination>
+          <el-pagination
+            background
+            layout="prev, pager, next, sizes, total, jumper"
+            :page-sizes="[5, 10, 15, 20]"
+            :page-size="seekData.pageSize"
+            :total="total"
+            @current-change="handleCurrentChange"
+            @size-change="handleSizeChange"
+          ></el-pagination>
         </div>
       </el-card>
     </el-row>
@@ -172,8 +180,11 @@ export default {
       dialogVisible: false,
       formLabelWidth: '100px',
       // 查询的数据
+      total: null,
       seekData: {
         hotelId: null,
+        pageSize: 10,
+        pageNum: 1
       },
       // 新增
       addform: {
@@ -236,10 +247,13 @@ export default {
 
     /* 初始化下拉框 */
     // 获取品牌下拉框
-    initialize () {
-      getBrandSelect().then((res) => {
+    initialize (obj) {
+      this.loading = true
+      getBrandSelect(obj).then((res) => {
         if (res.status === 200) {
           this.brandSelectData = res.data
+          this.total = res.data.total
+          this.loading = false
           // console.log(res)
         }
       })
@@ -418,6 +432,15 @@ export default {
       this.seekData.hotelSelectData = null
       this.seekData.hotelId = null
       this.seekData.brandId = null
+    },
+    //分页
+    handleCurrentChange (cpage) {
+      this.seekData.pageNum = cpage;
+      this.initList(this.seekData)
+    },
+    handleSizeChange (psize) {
+      this.seekData.pageSize = psize;
+      this.initList(this.seekData)
     }
   }
 }

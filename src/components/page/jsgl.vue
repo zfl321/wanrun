@@ -118,7 +118,15 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination>
+          <el-pagination
+            background
+            layout="prev, pager, next, sizes, total, jumper"
+            :page-sizes="[5, 10, 15, 20]"
+            :page-size="putData.pageSize"
+            :total="total"
+            @current-change="handleCurrentChange"
+            @size-change="handleSizeChange"
+          ></el-pagination>
         </div>
       </el-card>
     </el-row>
@@ -212,11 +220,14 @@ export default {
       allTreeKeys: null,
       // 编辑
       loading: false,
+      total: null,
       putData: {
         roleName: null,
         remark: null,
         roleId: null,
-        menuId: null
+        menuId: null,
+        pageSize: 10,
+        pageNum: 1
       },
       editData: {
         roleName: null,
@@ -256,12 +267,13 @@ export default {
   methods: {
 
     // 初始化表格数据
-    initList () {
+    initList (obj) {
       this.loading = true
-      getRoleList()
+      getRoleList(obj)
         .then(res => {
           if (res.status === 200) {
             this.tableData = res.data.rows
+            this.total = res.data.total
             localStorage.setItem('role', JSON.stringify(res.data.rows))
             this.loading = false
             // 给totalNum赋值
@@ -451,6 +463,15 @@ export default {
       this.seekData.createUser = null
       this.seekData.createTimeFrom = null
       this.seekData.createTimeT = null
+    },
+    //分页
+    handleCurrentChange (cpage) {
+      this.putData.pageNum = cpage;
+      this.initList(this.putData)
+    },
+    handleSizeChange (psize) {
+      this.putData.pageSize = psize;
+      this.initList(this.putData)
     }
 
   }
