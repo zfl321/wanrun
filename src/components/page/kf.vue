@@ -72,6 +72,16 @@
                     ></el-input>
                   </el-form-item>
                 </el-col>
+                <el-col :span="6">
+                  <el-form-item label="主板id">
+                    <el-input
+                      placeholder="请输入内容"
+                      v-model="seekData.mainBoardId"
+                      clearable
+                      class="my-input"
+                    ></el-input>
+                  </el-form-item>
+                </el-col>
               </el-row>
             </el-form>
           </div>
@@ -80,6 +90,7 @@
         <el-row>
           <el-col :span="19">
             <el-button @click="addBtn">新增</el-button>
+            <el-button @click="batchesDelete">批量删除</el-button>
           </el-col>
           <el-col :span="5" class="reset-button">
             <el-button type="primary" @click="handleSearch">查询</el-button>
@@ -114,11 +125,12 @@
             <el-table-column prop="brandName" label="品牌" width="120"></el-table-column>
             <el-table-column prop="hotelName" label="门店" width="120"></el-table-column>
             <el-table-column prop="buildingName" label="建筑" width="120"></el-table-column>
-            <el-table-column prop="floorName" label="楼层" width="100"></el-table-column>
+            <el-table-column prop="floorName" label="楼层" width="80"></el-table-column>
             <el-table-column prop="roomTypeName" label="房间类型" width="120"></el-table-column>
-            <el-table-column prop="roomNumber" label="房间号" width="100"></el-table-column>
-            <el-table-column prop="mainBoardIp" label="主板ip" width="150"></el-table-column>
-            <el-table-column prop="remark" label="描述"></el-table-column>
+            <el-table-column prop="roomNumber" label="房间号" width="70"></el-table-column>
+            <el-table-column prop="mainBoardIp" label="主板ip" width="120"></el-table-column>
+            <el-table-column prop="mainBoardId" label="主板id" width="120"></el-table-column>
+            <el-table-column prop="remark" label="描述" show-overflow-tooltip></el-table-column>
 
             <!-- 操作按钮列 -->
             <el-table-column label="操作" width="130">
@@ -152,6 +164,9 @@
       <el-form :model="editData" :rules="myrules">
         <el-form-item label="主板IP" :label-width="formLabelWidth">
           <el-input v-model="editData.mainBoardIp" placeholder="请输入内容"></el-input>
+        </el-form-item>
+        <el-form-item label="主板ID" :label-width="formLabelWidth">
+          <el-input v-model="editData.mainBoardId" placeholder="请输入内容"></el-input>
         </el-form-item>
 
         <el-form-item label="房间类型" :label-width="formLabelWidth">
@@ -236,6 +251,9 @@
         <el-form-item label="主板ip" prop="mainBoardIp" :label-width="formLabelWidth">
           <el-input v-model="addform.mainBoardIp" placeholder="请输入内容"></el-input>
         </el-form-item>
+        <el-form-item label="主板id" prop="mainBoardId" :label-width="formLabelWidth">
+          <el-input v-model="addform.mainBoardId" placeholder="请输入内容"></el-input>
+        </el-form-item>
         <el-form-item label="描述" :label-width="formLabelWidth">
           <el-input v-model="addform.remark" placeholder="请输入内容"></el-input>
         </el-form-item>
@@ -253,6 +271,7 @@ import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   data () {
     return {
+      multipleSelection: [],
       loading: false,
       // 建筑列表数据
       tableData: null,
@@ -266,6 +285,7 @@ export default {
         buildingId: null,
         floorId: null,
         mainBoardIp: null,
+        mainBoardId: null,
       },
       hotelId: null,
       brandId: null,
@@ -274,7 +294,8 @@ export default {
         floorId: null,  //楼层ID
         remark: null,   //客房描述
         buildingId: null,   //建筑ID
-        mainBoardIp: null,   //主板ID
+        mainBoardIp: null,   //主板Ip
+        mainBoardId: null,   //主板Id
         roomType: null,   //房间类型id
         roomNumber: null,   //房间号
       },
@@ -289,6 +310,7 @@ export default {
       // 编辑
       editData: {
         mainBoardIp: null,  //主板IP
+        mainBoardId: null,  //主板Id
         remark: null,   //描述
         roomType: null,   //房间类型id
         id: null,   //客房ID
@@ -299,6 +321,9 @@ export default {
           { required: true, message: '请输入内容', trigger: 'blur' }
         ],
         mainBoardIp: [
+          { required: true, message: '请输入内容', trigger: 'blur' }
+        ],
+        mainBoardId: [
           { required: true, message: '请输入内容', trigger: 'blur' }
         ],
 
@@ -464,8 +489,46 @@ export default {
       })
     },
 
+    batchesDelete () {
+      if (this.multipleSelection.length != 0) {
+        // 把要删除的用户ID以字符串拼接
+        let number = ""
+        for (let i = 0; i < this.multipleSelection.length; i++) {
+          const element = this.multipleSelection[i];
+          number += element.id + ","
+        }
+        number = number.slice(0, number.length - 1)  //去掉最后的逗号
+        this.$confirm('此操作将永久删除所选择门店, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.loading = true
+          delRoom(number)
+            .then(res => {
+              this.loading = false
+              if (res.data.code == 1) {
+                this.$message.success(res.data.message)
+                this.initList()
+              } else {
+                this.$message.error(res.data.message)
+              }
+            })
+        }).catch(() => {
+          this.loading = false
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+      } else {
+        this.$message.warning("请先选择要删除的数据")
+      }
+    },
+
     handleSelectionChange (val) {
       this.multipleSelection = val;
+      // console.log(val)
     },
 
     // 编辑楼层
@@ -479,6 +542,7 @@ export default {
         }
       })
       this.editData.mainBoardIp = index.mainBoardIp
+      this.editData.mainBoardId = index.mainBoardId
       this.editData.remark = index.remark
       this.editData.roomType = index.roomType
       this.editData.roomNumber = index.roomNumber
@@ -522,6 +586,7 @@ export default {
       this.seekData.buildingId = null,
         this.seekData.floorId = null,
         this.seekData.mainBoardIp = null,
+        this.seekData.mainBoardId = null,
         this.seekData.brandSelectData = null,
         this.seekData.hotelSelectData = null,
         this.initList()

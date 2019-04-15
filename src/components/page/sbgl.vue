@@ -47,6 +47,7 @@
         <el-row>
           <el-col :span="19">
             <el-button @click="addBtn">新增</el-button>
+            <el-button @click="batchesDelete">批量删除</el-button>
           </el-col>
           <el-col :span="5" class="reset-button">
             <el-button type="primary" @click="handleSearch">查询</el-button>
@@ -81,7 +82,7 @@
             <el-table-column prop="eqTypeName" label="设备类型" width="120"></el-table-column>
             <el-table-column prop="eqName" label="设备名称" width="120"></el-table-column>
             <el-table-column prop="hardwareId" label="硬件id" width="120"></el-table-column>
-            <el-table-column prop="describes" label="描述"></el-table-column>
+            <el-table-column prop="describes" label="描述" show-overflow-tooltip></el-table-column>
 
             <!-- 操作按钮列 -->
             <el-table-column label="操作" width="130">
@@ -181,6 +182,7 @@ import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   data () {
     return {
+      multipleSelection: [],
       loading: false,
       // 建筑列表数据
       tableData: null,
@@ -340,8 +342,46 @@ export default {
       })
     },
 
+    batchesDelete () {
+      if (this.multipleSelection.length != 0) {
+        // 把要删除的用户ID以字符串拼接
+        let number = ""
+        for (let i = 0; i < this.multipleSelection.length; i++) {
+          const element = this.multipleSelection[i];
+          number += element.id + ","
+        }
+        number = number.slice(0, number.length - 1)  //去掉最后的逗号
+        this.$confirm('此操作将永久删除所有选择项, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.loading = true
+          delEq(number)
+            .then(res => {
+              this.loading = false
+              if (res.data.code == 1) {
+                this.$message.success(res.data.message)
+                this.initList()
+              } else {
+                this.$message.error(res.data.message)
+              }
+            })
+        }).catch(() => {
+          this.loading = false
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+      } else {
+        this.$message.warning("请先选择要删除的数据")
+      }
+    },
+
     handleSelectionChange (val) {
       this.multipleSelection = val;
+      // console.log(val)
     },
 
     // 编辑楼层

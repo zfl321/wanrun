@@ -99,8 +99,8 @@
         <el-row>
           <el-col :span="19">
             <el-button @click="addBtn">新增</el-button>
-            <el-button @click="resetPassword">重置密码</el-button>
             <el-button @click="batchesDelete">批量删除</el-button>
+            <el-button @click="resetPassword">重置密码</el-button>
           </el-col>
           <el-col :span="5" class="reset-button">
             <el-button type="primary" @click="handleSearch">查询</el-button>
@@ -883,10 +883,13 @@ export default {
     },
     // 重置密码按钮
     resetPassword () {
-      var page = JSON.parse(localStorage.getItem('user'));
-      this.passwordData.username = page.username
-      this.passwordData.fullName = page.fullName
-      this.dialogFormVisible3 = true
+      if (this.multipleSelection.length == 1) {
+        this.passwordData.username = this.multipleSelection[0].username
+        this.passwordData.fullName = this.multipleSelection[0].fullName
+        this.dialogFormVisible3 = true
+      } else {
+        this.$message.warning("必须且只能选择一个要重置密码的用户")
+      }
     },
     confirmDassword () {
       editpassword(this.passwordData).then(res => {

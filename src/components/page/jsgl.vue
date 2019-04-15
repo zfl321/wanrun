@@ -93,7 +93,7 @@
             <el-table-column label="修改时间" width="150">
               <template slot-scope="scope">{{ scope.row.modifyTime }}</template>
             </el-table-column>
-            <el-table-column prop="remark" label="描述"></el-table-column>
+            <el-table-column prop="remark" label="描述" show-overflow-tooltip></el-table-column>
 
             <!-- 操作按钮列 -->
             <el-table-column label="操作" width="130">

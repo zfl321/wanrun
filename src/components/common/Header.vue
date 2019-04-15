@@ -33,31 +33,96 @@
             <i class="el-icon-caret-bottom"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <!--
-                        <a href="#" target="_blank">
-                            <el-dropdown-item>关于作者</el-dropdown-item>
-                        </a>
-            -->
             <!-- <a href="https://github.com/txwh/vue-manage-system" target="_blank"> -->
-            <a href="javascript:;" target="_blank">
+            <!-- <a href="javascript:;" target="_blank">
               <el-dropdown-item>项目仓库</el-dropdown-item>
-            </a>
+            </a>-->
+            <el-button @click="resetPassword" style="border:0">修改密码</el-button>
             <el-dropdown-item divided command="loginout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
     </div>
+    <!-- 重置密码的弹框 -->
+    <el-dialog title="重置密码" :visible.sync="dialogFormVisible3">
+      <el-form label-position="right" label-width="250px" :rules="myrules" ref="editRef">
+        <el-row :gutter="10">
+          <el-col :span="24">
+            <el-form-item label="账号">
+              <el-input
+                placeholder="请输入内容"
+                v-model="passwordData.username"
+                clearable
+                disabled
+                class="my-input"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="真实姓名">
+              <el-input
+                placeholder="请输入内容"
+                v-model="passwordData.fullName"
+                clearable
+                disabled
+                class="my-input"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="密码">
+              <el-input
+                placeholder="请输入内容"
+                v-model="passwordData.password"
+                show-password
+                class="my-input"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="确认密码">
+              <el-input
+                placeholder="这里检验还没做"
+                v-model="passwordData.password"
+                show-password
+                class="my-input"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="abrogateDassword">取 消</el-button>
+        <el-button type="primary" @click="confirmDassword">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
 import bus from '../common/bus';
+import { editpassword } from '@/api'
 export default {
   data () {
     return {
       collapse: false,
       fullscreen: false,
       name: 'linxin',
-      message: 2
+      message: 2,
+      // 重置密码数据
+      dialogFormVisible3: null,
+      passwordData: {
+        username: null,
+        fullName: null,
+        password: null,
+      },
+      myrules: {
+        floorName: [
+          { required: true, message: '请输入内容', trigger: 'blur' }
+        ],
+        address: [
+          { required: true, message: '请输入内容', trigger: 'blur' }
+        ]
+      },
     }
   },
   computed: {
@@ -68,6 +133,28 @@ export default {
     }
   },
   methods: {
+    // 重置密码按钮
+    resetPassword () {
+      var page = JSON.parse(localStorage.getItem('user'));
+      this.passwordData.username = page.username
+      this.passwordData.fullName = page.fullName
+      this.dialogFormVisible3 = true
+
+    },
+    confirmDassword () {
+      editpassword(this.passwordData).then(res => {
+        if (res.data.code == 1) {
+          this.dialogFormVisible3 = false
+          this.$message({
+            message: res.data.message,
+            type: 'success'
+          });
+        }
+      })
+    },
+    abrogateDassword () {
+      this.dialogFormVisible3 = false
+    },
     // 用户名下拉菜单选择事件
     handleCommand (command) {
       if (command == 'loginout') {
