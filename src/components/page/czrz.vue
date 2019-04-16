@@ -52,10 +52,10 @@
         </el-collapse-transition>
         <!-- 按钮行 -->
         <el-row>
-          <!-- <el-col :span="12">
-            <el-button @click="exportl">导出日志</el-button>
-          </el-col>-->
-          <el-col :span="24" class="reset-button">
+          <el-col :span="12">
+            <el-button @click="exportExcel">导出日志</el-button>
+          </el-col>
+          <el-col :span="12" class="reset-button">
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="reset">重置</el-button>
             <el-button plain class="my-icont" @click="fold">
@@ -80,18 +80,20 @@
             ref="multipleTable"
             :data="tableData"
             tooltip-effect="dark"
-            max-height="70vh"
+            height="70vh"
             style="width: 100%"
+            id="out-table"
           >
-            <el-table-column prop="brandName" label="品牌" width="150"></el-table-column>
-            <el-table-column prop="hotelName" label="门店" width="150"></el-table-column>
-            <el-table-column prop="username" label="操作人" width="150"></el-table-column>
-            <el-table-column prop="operation" label="操作描述" width="150"></el-table-column>
+            <el-table-column prop="brandName" label="品牌" width="130"></el-table-column>
+            <el-table-column prop="hotelName" label="门店" width="130"></el-table-column>
+            <el-table-column prop="username" label="操作人" width="130"></el-table-column>
+            <el-table-column prop="fullName" label="真实姓名" width="130"></el-table-column>
+            <el-table-column prop="operation" label="操作描述" width="130"></el-table-column>
             <el-table-column prop="createTime" label="操作时间" width="150"></el-table-column>
-            <el-table-column prop="time" label="操作用时（毫秒）" width="150"></el-table-column>
+            <el-table-column prop="time" label="操作用时（毫秒）" width="130"></el-table-column>
             <!-- <el-table-column prop="method" label="执行方法" width="150"></el-table-column> -->
             <el-table-column prop="ip" label="ip地址" width="150"></el-table-column>
-            <el-table-column prop="location" label="操作地点"></el-table-column>
+            <!-- <el-table-column prop="location" label="操作地点"></el-table-column> -->
 
             <!-- 操作按钮列 -->
             <!-- <el-table-column label="操作" width="90">
@@ -122,6 +124,8 @@
 </template>
 <script>
 import { delLog, getLoglList, getBrandSelect, getHotelSelect, exportLog } from '@/api'
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
 export default {
   data () {
     return {
@@ -220,6 +224,16 @@ export default {
       exportLog().then(() => {
 
       })
+    },
+    exportExcel () {
+      /* generate workbook object from table */
+      var wb = XLSX.utils.table_to_book(document.querySelector('#out-table'))
+      /* get binary string as output */
+      var wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' })
+      try {
+        FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), 'sheetjs.xlsx')
+      } catch (e) { if (typeof console !== 'undefined') console.log(e, wbout) }
+      return wbout
     },
     // 重置按钮
     reset (formName) {
