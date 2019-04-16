@@ -260,13 +260,13 @@ export default {
   computed: {
     // 权限
     showadd: function () {
-      return this.userJurisdiction.indexOf("user:add")
+      return this.userJurisdiction.indexOf("equipmentInfo:add")
     },
     showdelete: function () {
-      return this.userJurisdiction.indexOf("user:delete")
+      return this.userJurisdiction.indexOf("equipmentInfo:delete")
     },
     showupdate: function () {
-      return this.userJurisdiction.indexOf("user:update")
+      return this.userJurisdiction.indexOf("equipmentInfo:update")
     }
   },
   created () {

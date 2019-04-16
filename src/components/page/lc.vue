@@ -265,13 +265,13 @@ export default {
   computed: {
     // 权限
     showadd: function () {
-      return this.userJurisdiction.indexOf("user:add")
+      return this.userJurisdiction.indexOf("floor:add")
     },
     showdelete: function () {
-      return this.userJurisdiction.indexOf("user:delete")
+      return this.userJurisdiction.indexOf("floor:delete")
     },
     showupdate: function () {
-      return this.userJurisdiction.indexOf("user:update")
+      return this.userJurisdiction.indexOf("floor:update")
     }
   },
   // 注册表格组件

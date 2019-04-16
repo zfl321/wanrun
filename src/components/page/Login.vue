@@ -34,8 +34,8 @@ export default {
     return {
       loading: false,
       ruleForm: {
-        username: 'shuaige',
-        password: '321'
+        username: 'admin',
+        password: '123456.'
       },
       rules: {
         username: [
