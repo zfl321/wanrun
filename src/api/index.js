@@ -102,6 +102,8 @@ export const getLoglList = (obj) => axios.get('log', { params: obj })
 export const getDictList = (obj) => axios.get('dict', { params: obj })
 // 客房监控查询
 export const getRoomStatusList = (obj) => axios.get('roomStatus', { params: obj })
+// 故障信息查询
+export const getDeviceFaultList = (obj) => axios.get('deviceFault', { params: obj })
 
 // 添加品牌
 export const addBrand = (obj) => axios.post('brand', obj)
@@ -164,6 +166,8 @@ export const editEq = obj => axios.put('eq', obj)
 export const editRoomType = obj => axios.put('roomType', obj)
 // 修改密码
 export const editpassword = obj => axios.put('/user/password', obj)
+// 修改故障处理
+export const editDeviceFault = obj => axios.put('deviceFault', obj)
 
 
 

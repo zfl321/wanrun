@@ -9,7 +9,12 @@
               <el-row :gutter="10">
                 <el-col :span="6">
                   <el-form-item label="品牌">
-                    <el-select v-model="brandId" @change="selectOne" clearable placeholder="请选择">
+                    <el-select
+                      v-model="seekData.brandId"
+                      @change="selectOne"
+                      clearable
+                      placeholder="请选择"
+                    >
                       <el-option
                         v-for="(item,index) in brandSelectData"
                         :key="index"
@@ -21,7 +26,12 @@
                 </el-col>
                 <el-col :span="6">
                   <el-form-item label="门店">
-                    <el-select v-model="hotelId" @change="selectTwo" clearable placeholder="请选择">
+                    <el-select
+                      v-model="seekData.hotelId"
+                      @change="selectTwo"
+                      clearable
+                      placeholder="请选择"
+                    >
                       <el-option
                         v-for="(item,index) in hotelSelectData"
                         :key="index"
@@ -73,6 +83,18 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
+                  <el-form-item label="状态">
+                    <el-select v-model="seekData.repaired" clearable placeholder="请选择">
+                      <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
                   <el-form-item label="故障类型">
                     <el-input
                       placeholder="请输入内容"
@@ -89,7 +111,7 @@
         <!-- 按钮行 -->
         <el-row>
           <el-col :span="19">
-            <el-button @click="batchesDelete">批量删除</el-button>
+            <el-button @click="disposeBtn">处理</el-button>
           </el-col>
           <el-col :span="5" class="reset-button">
             <el-button type="primary" @click="handleSearch">查询</el-button>
@@ -125,34 +147,12 @@
             <el-table-column prop="hotelName" label="门店" width="120"></el-table-column>
             <el-table-column prop="buildingName" label="建筑" width="120"></el-table-column>
             <el-table-column prop="floorName" label="楼层" width="80"></el-table-column>
-            <el-table-column prop="roomTypeName" label="房间类型" width="120"></el-table-column>
             <el-table-column prop="roomNumber" label="房间号" width="70"></el-table-column>
-            <el-table-column prop="mainBoardIp" label="主板ip" width="120"></el-table-column>
-            <el-table-column prop="mainBoardId" label="主板id" width="120"></el-table-column>
-            <el-table-column prop="remark" label="描述" show-overflow-tooltip></el-table-column>
-
-            <!-- 操作按钮列 -->
-            <el-table-column label="操作" width="130">
-              <template slot-scope="scope">
-                <!-- 编辑按钮 -->
-                <el-button
-                  type="primary"
-                  circle
-                  icon="el-icon-edit"
-                  size="mini"
-                  dialogFormVisible
-                  @click="handleEdit(scope.row)"
-                ></el-button>
-                <!-- 删除按钮 -->
-                <el-button
-                  size="mini"
-                  type="primary"
-                  circle
-                  icon="el-icon-delete"
-                  @click="handleDelete(scope.row)"
-                ></el-button>
-              </template>
-            </el-table-column>
+            <el-table-column prop="repaired" label="处理状态" width="120"></el-table-column>
+            <el-table-column prop="typeName" label="故障类型" width="120"></el-table-column>
+            <el-table-column prop="findTime" label="发生时间" width="120"></el-table-column>
+            <el-table-column prop="respondTime" label="处理时间" width="120"></el-table-column>
+            <!-- <el-table-column prop="remark" label="描述" show-overflow-tooltip></el-table-column> -->
           </el-table>
           <el-pagination
             background
@@ -166,114 +166,10 @@
         </div>
       </el-card>
     </el-row>
-    <!-- 编辑的弹框 -->
-    <el-dialog title="编辑客房" :visible.sync="dialogFormVisible2" class="astrict">
-      <el-form :model="editData" :rules="myrules">
-        <el-form-item label="主板IP" :label-width="formLabelWidth">
-          <el-input v-model="editData.mainBoardIp" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="主板ID" :label-width="formLabelWidth">
-          <el-input v-model="editData.mainBoardId" placeholder="请输入内容"></el-input>
-        </el-form-item>
-
-        <el-form-item label="房间类型" :label-width="formLabelWidth">
-          <el-select v-model="editData.roomType" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in roomTypeSelectData"
-              :key="index"
-              :label="item.typeName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="房间号码" prop="name" :label-width="formLabelWidth">
-          <el-input v-model="editData.roomNumber" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="描述" :label-width="formLabelWidth">
-          <el-input v-model="editData.remark" placeholder="请输入内容"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible2=false">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
-      </div>
-    </el-dialog>
-
-    <!-- 新增的弹框 -->
-    <el-dialog title="新增客房" :visible.sync="dialogFormVisible" class="astrict">
-      <el-form :model="addform" :rules="myrules">
-        <el-form-item label="品牌" :label-width="formLabelWidth">
-          <el-select v-model="brandId" @change="selectOne" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in brandSelectData"
-              :key="index"
-              :label="item.brandName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="门店" :label-width="formLabelWidth">
-          <el-select v-model="hotelId" @change="selectTwo" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in hotelSelectData"
-              :key="index"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="建筑" :label-width="formLabelWidth">
-          <el-select v-model="addform.buildingId" @change="selectThree" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in buildingSelectData"
-              :key="index"
-              :label="item.buildingName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="楼层" :label-width="formLabelWidth">
-          <el-select v-model="addform.floorId" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in floorSelectData"
-              :key="index"
-              :label="item.floorName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="客房类型" :label-width="formLabelWidth">
-          <el-select v-model="addform.roomType" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in roomTypeSelectData"
-              :key="index"
-              :label="item.typeName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="房间号" prop="roomNumber" :label-width="formLabelWidth">
-          <el-input v-model="addform.roomNumber" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="主板ip" prop="mainBoardIp" :label-width="formLabelWidth">
-          <el-input v-model="addform.mainBoardIp" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="主板id" prop="mainBoardId" :label-width="formLabelWidth">
-          <el-input v-model="addform.mainBoardId" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="描述" :label-width="formLabelWidth">
-          <el-input v-model="addform.remark" placeholder="请输入内容"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 <script>
-import { getRoomlList, addRoom, getFloorSelect, getHotelSelect, getBoomTypelSelect, getBuildingSelect, delRoom, getRights, getBrandSelect, editRoom, getHotelSeek } from '@/api'
+import { getDeviceFaultList, editDeviceFault, getFloorSelect, getHotelSelect, getBoomTypelSelect, getBuildingSelect, getRights, getBrandSelect, getHotelSeek } from '@/api'
 import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   data () {
@@ -294,21 +190,19 @@ export default {
         floorId: null,
         mainBoardIp: null,
         mainBoardId: null,
+        hotelId: null,
+        brandId: null,
         pageSize: 10,
         pageNum: 1
       },
-      hotelId: null,
-      brandId: null,
-      // 新增
-      addform: {
-        floorId: null,  //楼层ID
-        remark: null,   //客房描述
-        buildingId: null,   //建筑ID
-        mainBoardIp: null,   //主板Ip
-        mainBoardId: null,   //主板Id
-        roomType: null,   //房间类型id
-        roomNumber: null,   //房间号
-      },
+      //状态
+      options: [{
+        value: '1',
+        label: '已处理'
+      }, {
+        value: '0',
+        label: '未处理'
+      }],
       // 下拉框的数据
       brandSelectData: null,
       hotelSelectData: null,
@@ -317,15 +211,7 @@ export default {
       roomTypeSelectData: null,
       options: regionData,
       selectedOptions: [],
-      // 编辑
-      editData: {
-        mainBoardIp: null,  //主板IP
-        mainBoardId: null,  //主板Id
-        remark: null,   //描述
-        roomType: null,   //房间类型id
-        id: null,   //客房ID
-        roomNumber: null,   //房间号码 
-      },
+
       myrules: {
         roomNumber: [
           { required: true, message: '请输入内容', trigger: 'blur' }
@@ -360,7 +246,7 @@ export default {
     // 初始化表格数据
     initList (obj) {
       this.loading = true
-      getRoomlList(obj).then(res => {
+      getDeviceFaultList(obj).then(res => {
         // console.log(res)
         if (res.status === 200) {
           this.tableData = res.data.rows
@@ -444,35 +330,8 @@ export default {
 
 
 
-    // 楼层删除
-    handleDelete (row) {
-      // console.log(row)
-      this.$confirm('此操作将永久删除该楼层, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // 点击确定执行的操作
-        // console.log(row.id)
-        delRoom(row.id)
-          .then(res => {
-            console.log(res)
-            if (res.status === 200) {
-              this.$message.success("删除成功")
-              this.initList()
-            } else {
-              this.$message.error("删除失败")
-            }
-          })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
-      })
-    },
 
-    batchesDelete () {
+    disposeBtn () {
       if (this.multipleSelection.length != 0) {
         // 把要删除的用户ID以字符串拼接
         let number = ""
@@ -481,13 +340,13 @@ export default {
           number += element.id + ","
         }
         number = number.slice(0, number.length - 1)  //去掉最后的逗号
-        this.$confirm('此操作将永久删除所选择门店, 是否继续?', '提示', {
+        this.$confirm('是否改为处理状态, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           this.loading = true
-          delRoom(number)
+          editDeviceFault(number)
             .then(res => {
               this.loading = false
               if (res.data.code == 1) {
@@ -505,7 +364,7 @@ export default {
           })
         })
       } else {
-        this.$message.warning("请先选择要删除的数据")
+        this.$message.warning("请先选择要处理的数据")
       }
     },
 
@@ -514,52 +373,12 @@ export default {
       // console.log(val)
     },
 
-    // 编辑楼层
-    handleEdit (index, row) {
-      console.log(index)
-      // 获取房间类型下拉框
-      getBoomTypelSelect(index.brandId).then((res) => {
-        if (res.status === 200) {
-          this.roomTypeSelectData = res.data
-          // console.log(res)
-        }
-      })
-      this.editData.mainBoardIp = index.mainBoardIp
-      this.editData.mainBoardId = index.mainBoardId
-      this.editData.remark = index.remark
-      this.editData.roomType = index.roomType
-      this.editData.roomNumber = index.roomNumber
-      // this.editData.id = index.id
-      this.dialogFormVisible2 = true
 
-    },
-    // 编辑楼层确认
-    confirmEditD () {
-      // console.log(this.editData);
-      this.loading = true
-      editRoom(this.editData).then(res => {
-        this.loading = false
-        if (res.data.code == 1) {
-          this.$message.success(res.data.message)
-          this.initList()
-          this.dialogFormVisible2 = false
-        } else {
-          this.$message.error(res.data.message)
-        }
-      })
-    },
     // 查询按钮
     handleSearch () {
       // console.log(this.seekData)
-      this.loading = true
       if (this.seekData) {
-        getRoomlList(this.seekData).then((res) => {
-          // console.log(res)
-          this.loading = false
-          if (res.status === 200) {
-            this.tableData = res.data.rows
-          }
-        })
+        this.initList(this.seekData)
       } else {
         this.initList()
       }

@@ -111,7 +111,7 @@
           <el-pagination
             background
             layout="prev, pager, next, sizes, total, jumper"
-            :page-sizes="[5, 10, 15, 20]"
+            :page-sizes="[5, 10, 15, 20, 100, 9999]"
             :page-size="seekData.pageSize"
             :total="total"
             @current-change="handleCurrentChange"

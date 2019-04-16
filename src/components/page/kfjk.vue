@@ -9,7 +9,12 @@
               <el-row :gutter="10">
                 <el-col :span="6">
                   <el-form-item label="品牌">
-                    <el-select v-model="brandId" @change="selectOne" clearable placeholder="请选择">
+                    <el-select
+                      v-model="seekData.brandId"
+                      @change="selectOne"
+                      clearable
+                      placeholder="请选择"
+                    >
                       <el-option
                         v-for="(item,index) in brandSelectData"
                         :key="index"
@@ -21,7 +26,12 @@
                 </el-col>
                 <el-col :span="6">
                   <el-form-item label="门店">
-                    <el-select v-model="hotelId" @change="selectTwo" clearable placeholder="请选择">
+                    <el-select
+                      v-model="seekData.hotelId"
+                      @change="selectTwo"
+                      clearable
+                      placeholder="请选择"
+                    >
                       <el-option
                         v-for="(item,index) in hotelSelectData"
                         :key="index"
@@ -369,9 +379,9 @@ export default {
         buildingId: null,
         floorId: null,
         mainBoardIp: null,
+        hotelId: null,
+        brandId: null,
       },
-      hotelId: null,
-      brandId: null,
       // 新增
       addform: {
         floorId: null,  //楼层ID
