@@ -19,6 +19,16 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
+                <el-col :span="6">
+                  <el-form-item label="门店">
+                    <el-input
+                      placeholder="请输入内容"
+                      v-model="seekData.name"
+                      clearable
+                      class="my-input"
+                    ></el-input>
+                  </el-form-item>
+                </el-col>
               </el-row>
             </el-form>
           </div>
@@ -65,7 +75,7 @@
             <el-table-column label="地址" width="350">
               <template
                 slot-scope="scope"
-              >{{ scope.row.province}}省{{scope.row.city}}市{{scope.row.description}}/{{scope.row.address }}</template>
+              >{{ scope.row.province}}{{scope.row.city}}{{scope.row.address }}</template>
             </el-table-column>
             <el-table-column prop="description" label="描述"></el-table-column>
 
@@ -202,6 +212,7 @@ export default {
       total: null,
       seekData: {
         brandId: null,
+        name: null,
         pageSize: 10,
         pageNum: 1
       },
@@ -442,7 +453,7 @@ export default {
     handleSearch () {
       this.loading = true
       // console.log(this.seekData.brandId)
-      if (this.seekData.brandId) {
+      if (this.seekData.brandId || this.seekData.name) {
         getHotelSeek(this.seekData).then((res) => {
           this.tableData = res.data.rows
           this.loading = false

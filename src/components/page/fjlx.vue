@@ -26,14 +26,12 @@
                 </el-col>
                 <el-col :span="6">
                   <el-form-item label="房间类型">
-                    <el-select v-model="seekData.typeName" clearable placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in roomTypeSelectData"
-                        :key="index"
-                        :label="item.typeName"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
+                    <el-input
+                      placeholder="请输入内容"
+                      v-model="seekData.typeName"
+                      clearable
+                      class="my-input"
+                    ></el-input>
                   </el-form-item>
                 </el-col>
               </el-row>

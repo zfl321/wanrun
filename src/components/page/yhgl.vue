@@ -224,7 +224,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <!-- <el-col :span="12">
             <el-form-item label="角色">
               <el-select v-model="editData.roleId" placeholder="请选择">
                 <el-option
@@ -235,7 +235,7 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-          </el-col>
+          </el-col>-->
           <el-col :span="12">
             <el-form-item label="账号">
               <el-input placeholder="请输入内容" v-model="editData.username" disabled class="my-input"></el-input>
@@ -262,6 +262,8 @@
               <el-input placeholder="请输入内容" v-model="editData.oph" clearable class="my-input"></el-input>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="性别">
               <div>
@@ -278,6 +280,8 @@
               </div>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="24">
             <el-form-item label="描述">
               <el-input
@@ -855,12 +859,12 @@ export default {
     // 查询按钮
     handleSearch () {
       if (this.createTime) {
-        this.seekData.createTimeTo = this.createTime[1]
-        this.seekData.createTimeFrom = this.createTime[0]
+        this.seekData.createTimeTo = this.createTime[1] + " 23:59:59"
+        this.seekData.createTimeFrom = this.createTime[0] + " 00:00:00"
       }
       if (this.lastLoginTime) {
-        this.seekData.lastLoginTimeTo = this.lastLoginTime[1]
-        this.seekData.lastLoginTimeFrom = this.lastLoginTime[0]
+        this.seekData.lastLoginTimeTo = this.lastLoginTime[1] + " 23:59:59"
+        this.seekData.lastLoginTimeFrom = this.lastLoginTime[0] + " 00:00:00"
       }
       // console.log(this.seekData)
       if (this.seekData) {

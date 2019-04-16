@@ -9,14 +9,12 @@
               <el-row :gutter="10">
                 <el-col :span="6">
                   <el-form-item label="品牌">
-                    <el-select v-model="seekData.brandId" placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in brandSelectData"
-                        :key="index"
-                        :label="item.brandName"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
+                    <el-input
+                      placeholder="请输入内容"
+                      v-model="seekData.brandName"
+                      clearable
+                      class="my-input"
+                    ></el-input>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -161,7 +159,7 @@ export default {
       // 查询的数据
       total: null,
       seekData: {
-        brandId: null,
+        brandName: null,
         pageSize: 10,
         pageNum: 1
       },
@@ -363,11 +361,11 @@ export default {
     },
     // 查询按钮
     handleSearch () {
-      if (this.seekData.brandId) {
-        getBrandSeek(this.seekData.brandId).then((res) => {
+      if (this.seekData.brandName) {
+        getBrandSeek(this.seekData).then((res) => {
           console.log(this.tableData)
           if (res.status === 200) {
-            this.tableData = [res.data]
+            this.tableData = res.data.rows
             console.log(this.tableData)
           }
         })
@@ -377,7 +375,7 @@ export default {
     },
     // 重置按钮
     reset () {
-      this.seekData.brandId = null  //品牌
+      this.seekData.brandName = null  //品牌
     },
     //分页
     handleCurrentChange (cpage) {
@@ -412,14 +410,14 @@ export default {
   .el-col {
     border-radius: 4px;
   }
+  .my-input {
+    max-width: 209px;
+  }
 
   .grid-content {
     border-radius: 4px;
     height: 36px;
     white-space: nowrap;
-    .el-input__inner {
-      max-width: 190px;
-    }
     span {
       font-size: 14px;
     }

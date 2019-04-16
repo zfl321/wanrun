@@ -274,7 +274,6 @@ export default {
           if (res.status === 200) {
             this.tableData = res.data.rows
             this.total = res.data.total
-            localStorage.setItem('role', JSON.stringify(res.data.rows))
             this.loading = false
             // 给totalNum赋值
             // this.totalNum = res.data.data.total
@@ -444,8 +443,8 @@ export default {
     handleSearch () {
       this.loading = true
       if (this.createTime) {
-        this.seekData.createTimeTo = this.createTime[1]
-        this.seekData.createTimeFrom = this.createTime[0]
+        this.seekData.createTimeTo = this.createTime[1] + " 23:59:59"
+        this.seekData.createTimeFrom = this.createTime[0] + " 00:00:00"
       }
       // console.log(this.seekData)
       getRoleList(this.seekData).then(res => {

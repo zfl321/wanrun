@@ -34,8 +34,8 @@ export default {
     return {
       loading: false,
       ruleForm: {
-        username: 'admin',
-        password: '123456.'
+        username: 'shuaige',
+        password: '321'
       },
       rules: {
         username: [
@@ -64,6 +64,8 @@ export default {
                 localStorage.setItem('user', JSON.stringify(res.data.data.user))
                 // 保存用户名称
                 localStorage.setItem('username', JSON.stringify(res.data.data.user.username))
+                // 保存用户权限信息
+                localStorage.setItem('userJurisdiction', JSON.stringify(res.data.data.permissions))
                 // 登录成功跳转到首页
                 this.$router.push('/')
               } else {

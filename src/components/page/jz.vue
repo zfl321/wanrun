@@ -31,6 +31,16 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
+                <el-col :span="6">
+                  <el-form-item label="建筑">
+                    <el-input
+                      placeholder="请输入内容"
+                      v-model="seekData.buildingName"
+                      clearable
+                      class="my-input"
+                    ></el-input>
+                  </el-form-item>
+                </el-col>
               </el-row>
             </el-form>
           </div>
@@ -182,7 +192,9 @@ export default {
       // 查询的数据
       total: null,
       seekData: {
+        brandId: null,
         hotelId: null,
+        buildingName: null,
         pageSize: 10,
         pageNum: 1
       },
@@ -414,10 +426,10 @@ export default {
     },
     // 查询按钮
     handleSearch () {
-      console.log(this.seekData)
+      // console.log(this.seekData)
       if (this.seekData) {
         getBuildinglList(this.seekData).then((res) => {
-          console.log(res)
+          // console.log(res)
           if (res.status === 200) {
             this.tableData = res.data.rows
           }
@@ -432,6 +444,7 @@ export default {
       this.seekData.hotelSelectData = null
       this.seekData.hotelId = null
       this.seekData.brandId = null
+      this.seekData.buildingName = null
     },
     //分页
     handleCurrentChange (cpage) {
@@ -453,13 +466,10 @@ export default {
     }
   }
   .my-iemt {
-    span {
-      font-size: 14px;
-    }
     white-space: nowrap;
-    .my-input {
-      max-width: 200px;
-    }
+  }
+  .my-input {
+    max-width: 209px;
   }
   .el-row {
     margin-bottom: 10px;

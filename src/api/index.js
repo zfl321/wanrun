@@ -7,8 +7,8 @@ axios.defaults.withCredentials = true
 // console.log(axios.defaults)
 
 // axios.defaults.baseURL = 'http://172.16.106.35:9527'
-axios.defaults.baseURL = 'http://47.92.64.56:9527'
-// axios.defaults.baseURL = 'http://192.168.1.51:9527'
+// axios.defaults.baseURL = 'http://47.92.64.56:9527'
+axios.defaults.baseURL = 'http://192.168.1.51:9527'
 // axios.defaults.baseURL = 'http://35h5wk.natappfree.cc'
 // 登陆函数
 export const login = function (obj) {
@@ -119,6 +119,8 @@ export const addRoom = (obj) => axios.post('room', obj)
 export const addRoomType = (obj) => axios.post('roomType', obj)
 // 添加设备
 export const addEq = (obj) => axios.post('eq', obj)
+// 日志导出
+export const exportLog = (obj) => axios.post('log/excel', obj)
 
 
 
@@ -137,8 +139,6 @@ export const getFloorSelect = (id) => axios.get('floor/list/' + id)
 export const getRoleSelect = () => axios.get('role/list/')
 // 设备下拉框
 export const getEqSelect = () => axios.get('eq/list/')
-// 获取操作日志
-export const getLog = () => axios.get('log')
 // 获取设备类型
 export const getEqTypeSelect = () => axios.get('dict/list', {
   params: { parentId: 'EQUIPMENT' }

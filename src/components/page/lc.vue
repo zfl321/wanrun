@@ -43,6 +43,16 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
+                <el-col :span="6">
+                  <el-form-item label="楼层">
+                    <el-input
+                      placeholder="请输入内容"
+                      v-model="seekData.floorName"
+                      clearable
+                      class="my-input"
+                    ></el-input>
+                  </el-form-item>
+                </el-col>
               </el-row>
             </el-form>
           </div>
@@ -206,6 +216,7 @@ export default {
       total: null,
       seekData: {
         buildingId: null,
+        floorName: null,
         pageSize: 10,
         pageNum: 1
       },
@@ -494,9 +505,9 @@ export default {
       font-size: 14px;
     }
     white-space: nowrap;
-    .my-input {
-      max-width: 200px;
-    }
+  }
+  .my-input {
+    max-width: 200px;
   }
   .el-row {
     margin-bottom: 10px;

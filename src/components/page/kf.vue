@@ -63,6 +63,16 @@
               </el-row>
               <el-row>
                 <el-col :span="6">
+                  <el-form-item label="房间号">
+                    <el-input
+                      placeholder="请输入内容"
+                      v-model="seekData.roomNumber"
+                      clearable
+                      class="my-input"
+                    ></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
                   <el-form-item label="主板ip">
                     <el-input
                       placeholder="请输入内容"
@@ -293,6 +303,7 @@ export default {
       seekData: {
         buildingId: null,
         floorId: null,
+        roomNumber: null,
         mainBoardIp: null,
         mainBoardId: null,
         pageSize: 10,
