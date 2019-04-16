@@ -48,8 +48,9 @@
         <!-- 按钮行 -->
         <el-row>
           <el-col :span="19">
-            <el-button @click="addBtn">新增</el-button>
-            <el-button @click="batchesDelete">批量删除</el-button>
+            <el-button @click="addBtn" v-if="showadd!=-1">新增</el-button>
+            <el-button @click="batchesDelete" v-if="showdelete!=-1">批量删除</el-button>
+            <div style="color: #fff;">.</div>
           </el-col>
           <el-col :span="5" class="reset-button">
             <el-button type="primary" @click="handleSearch">查询</el-button>
@@ -91,6 +92,7 @@
               <template slot-scope="scope">
                 <!-- 编辑按钮 -->
                 <el-button
+                  v-if="showupdate!=-1"
                   type="primary"
                   circle
                   icon="el-icon-edit"
@@ -100,6 +102,7 @@
                 ></el-button>
                 <!-- 删除按钮 -->
                 <el-button
+                  v-if="showdelete!=-1"
                   size="mini"
                   type="primary"
                   circle
@@ -225,7 +228,7 @@ export default {
           { required: true, message: '请输入内容', trigger: 'blur' }
         ]
       },
-
+      userJurisdiction: null,
       defaultProps: {
         children: 'children',
         label: 'title'
@@ -234,11 +237,22 @@ export default {
     }
   },
   computed: {
+    // 权限
+    showadd: function () {
+      return this.userJurisdiction.indexOf("user:add")
+    },
+    showdelete: function () {
+      return this.userJurisdiction.indexOf("user:delete")
+    },
+    showupdate: function () {
+      return this.userJurisdiction.indexOf("user:update")
+    }
   },
   // 注册表格组件
   components: {
   },
   created () {
+    this.userJurisdiction = JSON.parse(localStorage.getItem('userJurisdiction'));
     // 调用初始化表格数据方法
     this.initList()
   },
@@ -249,7 +263,7 @@ export default {
       this.loading = true
       getBuildinglList()
         .then(res => {
-          console.log(res)
+          // console.log(res)
           if (res.status === 200) {
             this.tableData = res.data.rows
             this.loading = false
