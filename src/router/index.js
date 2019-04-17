@@ -82,6 +82,12 @@ export default new Router({
                     meta: { title: '权限测试', permission: true }
                 },
                 {
+                    // 故障监控页面
+                    path: '/gzjk',
+                    component: resolve => require(['../components/page/gzjk.vue'], resolve),
+                    meta: { title: '故障监控', gzjk: true }
+                },
+                {
                     // 故障信息页面
                     path: '/gzxx',
                     component: resolve => require(['../components/page/gzxx.vue'], resolve),

@@ -500,14 +500,14 @@ export default {
   }
 }
 .my-box {
+  .my-input {
+    max-width: 209px;
+  }
   .my-iemt {
     span {
       font-size: 14px;
     }
     white-space: nowrap;
-    .my-input {
-      max-width: 200px;
-    }
   }
   .el-row {
     margin-bottom: 10px;

@@ -58,6 +58,8 @@ export const delLog = (obj) => axios.delete('log/' + obj)
 export const delEq = (obj) => axios.delete('eq/' + obj)
 // 删除字典
 export const delDict = (obj) => axios.delete('dict/' + obj)
+// 修改故障处理
+export const editDeviceFault = obj => axios.get('deviceFault/' + obj)
 
 // 给用户分配角色
 export const grantUserRole = (id, rid) => axios.put(`user/${id}/role`, { rid: rid })
@@ -104,6 +106,8 @@ export const getDictList = (obj) => axios.get('dict', { params: obj })
 export const getRoomStatusList = (obj) => axios.get('roomStatus', { params: obj })
 // 故障信息查询
 export const getDeviceFaultList = (obj) => axios.get('deviceFault', { params: obj })
+// 故障监控查询
+export const getDeviceFaultAlarmList = (obj) => axios.get('deviceFaultAlarm', { params: obj })
 
 // 添加品牌
 export const addBrand = (obj) => axios.post('brand', obj)
@@ -145,6 +149,10 @@ export const getEqSelect = () => axios.get('eq/list/')
 export const getEqTypeSelect = () => axios.get('dict/list', {
   params: { parentId: 'EQUIPMENT' }
 })
+// 获取故障信息
+export const getKeyySelect = () => axios.get('dict/list', {
+  params: { parentId: 'FAULT' }
+})
 
 
 
@@ -166,8 +174,7 @@ export const editEq = obj => axios.put('eq', obj)
 export const editRoomType = obj => axios.put('roomType', obj)
 // 修改密码
 export const editpassword = obj => axios.put('/user/password', obj)
-// 修改故障处理
-export const editDeviceFault = obj => axios.put('deviceFault', obj)
+
 
 
 

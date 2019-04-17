@@ -112,10 +112,7 @@
         </el-collapse-transition>
         <!-- 按钮行 -->
         <el-row>
-          <el-col :span="19">
-            <el-button @click="disposeBtn">处理</el-button>
-          </el-col>
-          <el-col :span="5" class="reset-button">
+          <el-col :span="24" class="reset-button">
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="reset">重置</el-button>
             <el-button plain class="my-icont" @click="fold">
@@ -145,20 +142,12 @@
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="brandName" label="品牌" width="120"></el-table-column>
-            <el-table-column prop="hotelName" label="门店" width="120"></el-table-column>
-            <el-table-column prop="buildingName" label="建筑" width="120"></el-table-column>
-            <el-table-column prop="floorName" label="楼层" width="80"></el-table-column>
-            <el-table-column prop="roomNumber" label="房间号" width="70"></el-table-column>
-            <el-table-column prop="repaired" label="处理状态" width="120">
-              <template slot-scope="scope">
-                <el-tag v-if="scope.row.repaired==1" type="success">已处理</el-tag>
-                <el-tag v-else type="danger">未处理</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="typeName" label="故障类型" width="120"></el-table-column>
-            <el-table-column prop="findTime" label="发生时间" width="150"></el-table-column>
-            <el-table-column prop="respondTime" label="处理时间" width="150"></el-table-column>
+            <el-table-column prop="brandName" label="品牌" width="150"></el-table-column>
+            <el-table-column prop="hotelName" label="门店" width="150"></el-table-column>
+            <el-table-column prop="buildingName" label="建筑" width="150"></el-table-column>
+            <el-table-column prop="floorName" label="楼层" width="120"></el-table-column>
+            <el-table-column prop="roomNumber" label="房间号" width="120"></el-table-column>
+            <el-table-column prop="typeName" label="故障类型" width="150"></el-table-column>
             <!-- <el-table-column prop="remark" label="描述" show-overflow-tooltip></el-table-column> -->
           </el-table>
           <el-pagination
@@ -176,7 +165,7 @@
   </div>
 </template>
 <script>
-import { getDeviceFaultList, editDeviceFault, getKeyySelect, getFloorSelect, getHotelSelect, getBoomTypelSelect, getBuildingSelect, getRights, getBrandSelect, getHotelSeek } from '@/api'
+import { getDeviceFaultAlarmList, editDeviceFault, getKeyySelect, getFloorSelect, getHotelSelect, getBoomTypelSelect, getBuildingSelect, getRights, getBrandSelect, getHotelSeek } from '@/api'
 import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   data () {
@@ -254,7 +243,7 @@ export default {
     // 初始化表格数据
     initList (obj) {
       this.loading = true
-      getDeviceFaultList(obj).then(res => {
+      getDeviceFaultAlarmList(obj).then(res => {
         // console.log(res)
         if (res.status === 200) {
           this.tableData = res.data.rows
