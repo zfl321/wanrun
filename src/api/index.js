@@ -7,8 +7,8 @@ axios.defaults.withCredentials = true
 // console.log(axios.defaults)
 
 // axios.defaults.baseURL = 'http://172.16.106.35:9527'
-// axios.defaults.baseURL = 'http://47.92.64.56:9527'
-axios.defaults.baseURL = 'http://192.168.1.51:9527'
+axios.defaults.baseURL = 'http://47.92.64.56:9527'
+// axios.defaults.baseURL = 'http://192.168.1.51:9527'
 // axios.defaults.baseURL = 'http://35h5wk.natappfree.cc'
 // 登陆函数
 export const login = function (obj) {
@@ -58,6 +58,8 @@ export const delLog = (obj) => axios.delete('log/' + obj)
 export const delEq = (obj) => axios.delete('eq/' + obj)
 // 删除字典
 export const delDict = (obj) => axios.delete('dict/' + obj)
+// 删除菜单
+export const delMenu = (obj) => axios.delete('menu/' + obj)
 // 修改故障处理
 export const editDeviceFault = obj => axios.get('deviceFault/' + obj)
 
@@ -108,13 +110,16 @@ export const getRoomStatusList = (obj) => axios.get('roomStatus', { params: obj 
 export const getDeviceFaultList = (obj) => axios.get('deviceFault', { params: obj })
 // 故障监控查询
 export const getDeviceFaultAlarmList = (obj) => axios.get('deviceFaultAlarm', { params: obj })
+// 菜单管理查询
+export const getMenuList = (obj) => axios.get('menu', { params: obj })
+
+
+
 
 // 添加品牌
 export const addBrand = (obj) => axios.post('brand', obj)
-
 // 添加门店
 export const addHotel = (obj) => axios.post('hotel', obj)
-
 // 添加建筑
 export const addBuilding = (obj) => axios.post('building', obj)
 // 添加楼层
@@ -129,6 +134,8 @@ export const addEq = (obj) => axios.post('eq', obj)
 export const addDict = (obj) => axios.post('dict', obj)
 // 日志导出
 export const exportLog = (obj) => axios.post('log/excel', obj)
+// 添加菜单
+export const menuAdd = (obj) => axios.post('menu', obj)
 
 
 
@@ -178,6 +185,8 @@ export const editRoomType = obj => axios.put('roomType', obj)
 export const editpassword = obj => axios.put('/user/password', obj)
 // 字典编辑
 export const editDict = obj => axios.put('dict', obj)
+// 菜单编辑
+export const editMenu = obj => axios.put('menu', obj)
 
 
 

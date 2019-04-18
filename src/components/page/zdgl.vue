@@ -5,8 +5,8 @@
         <!-- 侧边栏 -->
         <el-aside width="200px" class="my-aside">
           <el-row>
-            <el-button @click="addBtnl" v-if="showadd!=-1">新增</el-button>
-            <el-button v-if="showdelete!=-1" type="primary" @click="handleDeletebtn">删除</el-button>
+            <el-button @click="addBtnl" v-if="showadd!=-1" type="primary">新增</el-button>
+            <el-button v-if="showdelete!=-1" @click="handleDeletebtn">删除</el-button>
           </el-row>
           <el-row v-for="(item,index) in data" :key="index">
             <el-button
@@ -20,8 +20,9 @@
         <!-- 主要内容 -->
         <el-main style="padding: 0">
           <el-row>
-            <el-col :span="24" style="text-align: right;">
-              <el-button @click="addBtnr" v-if="showadd!=-1">新增</el-button>
+            <el-col :span="24">
+              <!-- style="text-align: right;" -->
+              <el-button @click="addBtnr" v-if="showadd!=-1" type="primary">新增</el-button>
             </el-col>
           </el-row>
           <el-row>
