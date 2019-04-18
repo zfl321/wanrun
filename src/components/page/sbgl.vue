@@ -255,9 +255,6 @@ export default {
     }
   },
   computed: {
-  },
-  // 注册表格组件
-  computed: {
     // 权限
     showadd: function () {
       return this.userJurisdiction.indexOf("equipmentInfo:add")

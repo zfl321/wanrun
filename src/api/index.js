@@ -125,6 +125,8 @@ export const addRoom = (obj) => axios.post('room', obj)
 export const addRoomType = (obj) => axios.post('roomType', obj)
 // 添加设备
 export const addEq = (obj) => axios.post('eq', obj)
+// 添加字典
+export const addDict = (obj) => axios.post('dict', obj)
 // 日志导出
 export const exportLog = (obj) => axios.post('log/excel', obj)
 
