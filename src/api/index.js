@@ -176,6 +176,8 @@ export const editEq = obj => axios.put('eq', obj)
 export const editRoomType = obj => axios.put('roomType', obj)
 // 修改密码
 export const editpassword = obj => axios.put('/user/password', obj)
+// 字典编辑
+export const editDict = obj => axios.put('dict', obj)
 
 
 

@@ -62,8 +62,8 @@
     </el-card>
     <!-- 新增的弹框 -->
     <el-dialog title="新增字典" :visible.sync="dialogFormVisible" class="astrict">
-      <el-form :model="addform" :rules="myrules">
-        <el-form-item label="参数名" prop="keyy" :label-width="formLabelWidth">
+      <el-form :model="addform">
+        <el-form-item label="参数名" :label-width="formLabelWidth">
           <el-input v-model="addform.keyy" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
         <el-form-item label="参数值	" :label-width="formLabelWidth">
@@ -75,16 +75,32 @@
         <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 编辑的弹框 -->
+    <el-dialog title="编辑字典" :visible.sync="dialogFormVisible2" class="astrict">
+      <el-form :model="editdform">
+        <el-form-item label="参数名" :label-width="formLabelWidth">
+          <el-input v-model="editdform.keyy" clearable placeholder="请输入内容"></el-input>
+        </el-form-item>
+        <el-form-item label="参数值	" :label-width="formLabelWidth">
+          <el-input v-model="editdform.valuee" clearable placeholder="请输入内容"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible2=false">取 消</el-button>
+        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { getDictList, addDict, delDict } from '@/api'
+import { getDictList, addDict, delDict, editDict } from '@/api'
 export default {
   data () {
     return {
       formLabelWidth: "100px",
       loading: false,
       dialogFormVisible: null,
+      dialogFormVisible2: null,
       userJurisdiction: null,
       /* 表格数据 */
       tableData: null,
@@ -96,6 +112,11 @@ export default {
       id: null,
       addform: {
         parentId: 0,
+        keyy: null,
+        valuee: null,
+      },
+      editdform: {
+        dictId: null,
         keyy: null,
         valuee: null,
       }
@@ -229,7 +250,30 @@ export default {
     abrogateAdd () {
       this.dialogFormVisible = false
     },
+    // 编辑
+    handleEdit (index, row) {
+      this.editdform.keyy = index.key
+      this.editdform.valuee = index.value
+      this.editdform.dictId = index.id
+      this.dialogFormVisible2 = true
 
+    },
+    // 编辑确认
+    confirmEditD () {
+      // console.log(this.editData);
+      this.loading = true
+      editDict(this.editdform).then(res => {
+        this.loading = false
+        if (res.data.code == 1) {
+          this.$message.success(res.data.message)
+          this.initList()
+          this.tableData = null
+          this.dialogFormVisible2 = false
+        } else {
+          this.$message.error(res.data.message)
+        }
+      })
+    },
     //列表点击事件
     listClick (obj) {
       this.tableData = obj.children
