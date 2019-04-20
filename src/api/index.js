@@ -9,7 +9,7 @@ axios.defaults.withCredentials = true
 // axios.defaults.baseURL = 'http://172.16.106.35:9527'
 axios.defaults.baseURL = 'http://47.92.64.56:9527'
 // axios.defaults.baseURL = 'http://192.168.1.51:9527'
-// axios.defaults.baseURL = 'http://35h5wk.natappfree.cc'
+// axios.defaults.baseURL = 'http://t2fkp3.natappfree.cc'
 // 登陆函数
 export const login = function (obj) {
   return axios.post('login', obj)
@@ -136,6 +136,8 @@ export const addDict = (obj) => axios.post('dict', obj)
 export const exportLog = (obj) => axios.post('log/excel', obj)
 // 添加菜单
 export const menuAdd = (obj) => axios.post('menu', obj)
+// 
+export const ljbn = (obj) => axios.post('/mqtt/mqttb', obj)
 
 
 
@@ -199,14 +201,15 @@ axios.interceptors.request.use(function (config) {
     // Authorization字段不是随便加的，它是前后台约定好的字段
     config.headers.Authentication = token
   }
-
-  // console.log(config)
-  // 将请求类型改为普通的表单类型
-  config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-  if (config.method === 'post' || 'put') {
-    config.data = QS.stringify({
-      ...config.data  // 将参数变成  a=xx&b=xx&c=xx这样的参数列表
-    });
+  // console.log(config.url)
+  if (config.url != "/mqtt/mqttb") {
+    // 将请求类型改为普通的表单类型
+    config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    if (config.method === 'post' || 'put') {
+      config.data = QS.stringify({
+        ...config.data  // 将参数变成  a=xx&b=xx&c=xx这样的参数列表
+      });
+    }
   }
 
   return config

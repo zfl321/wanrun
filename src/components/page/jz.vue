@@ -126,7 +126,7 @@
     </el-row>
     <!-- 编辑的弹框 -->
     <el-dialog title="编辑建筑" :visible.sync="dialogFormVisible2" class="astrict">
-      <el-form :model="editData" :rules="myrules">
+      <el-form :model="editData" :ref="editData" :rules="myrules">
         <el-form-item label="名称" prop="buildingName" :label-width="formLabelWidth">
           <el-input v-model="editData.buildingName" placeholder="请输入内容"></el-input>
         </el-form-item>
@@ -136,20 +136,17 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible2=false">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
+        <el-button type="primary" @click="confirmEditD(editData)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
 
     <!-- 新增的弹框 -->
     <el-dialog title="新增建筑" :visible.sync="dialogFormVisible" class="astrict">
-      <el-form :model="addform" :rules="myrules">
-        <el-form-item label="名称" prop="name" :label-width="formLabelWidth">
+      <el-form :model="addform" :ref="addform" :rules="myrules">
+        <el-form-item label="名称" prop="buildingName" :label-width="formLabelWidth">
           <el-input v-model="addform.buildingName" placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="描述" :label-width="formLabelWidth">
-          <el-input v-model="addform.description" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="品牌" :label-width="formLabelWidth">
+        <el-form-item label="品牌" prop="brandId" :label-width="formLabelWidth">
           <el-select v-model="addform.brandId" @change="selectOne" placeholder="请选择">
             <el-option
               v-for="(item,index) in brandSelectData"
@@ -159,7 +156,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="门店" :label-width="formLabelWidth">
+        <el-form-item label="门店" prop="hotelId" :label-width="formLabelWidth">
           <el-select v-model="addform.hotelId" placeholder="请选择">
             <el-option
               v-for="(item,index) in hotelSelectData"
@@ -169,10 +166,13 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="描述" :label-width="formLabelWidth">
+          <el-input type="textarea" :rows="5" v-model="addform.description" placeholder="请输入内容"></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd(addform)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -182,6 +182,7 @@ import { getBuildinglList, addBuilding, getHotelSelect, delBuilding, getRights, 
 import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   data () {
+
     return {
       multipleSelection: [],
       loading: false,
@@ -203,7 +204,7 @@ export default {
       },
       // 新增
       addform: {
-        buildingName: null,  //建筑名称
+        brandId: null,  //建筑id
         description: null,   //建筑描述
         hotelId: null,   //门店ID
       },
@@ -218,14 +219,14 @@ export default {
         id: null,   //建筑ID
       },
       myrules: {
-        name: [
+        buildingName: [
           { required: true, message: '请输入内容', trigger: 'blur' }
         ],
-        address: [
-          { required: true, message: '请输入内容', trigger: 'blur' }
+        brandId: [
+          { required: true, message: '请选择', trigger: 'change' }
         ],
-        selectedOptions: [
-          { required: true, message: '请输入内容', trigger: 'blur' }
+        hotelId: [
+          { required: true, message: '请选择', trigger: 'change' }
         ]
       },
       userJurisdiction: null,
@@ -321,26 +322,40 @@ export default {
     },
 
     // 确定按钮
-    confirmAdd () {
+    confirmAdd (formName) {
       // addform.province = selectedOptions
-      this.loading = true
-      addBuilding(this.addform)
-        .then((res) => {
-          this.loading = false
-          if (res.data.code == 1) {
-            this.$message.success(res.data.message)
-            this.initList()
-            this.dialogFormVisible = false
-          } else {
-            this.$message.error(res.data.message)
-          }
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          addBuilding(this.addform)
+            .then((res) => {
+              this.loading = false
+              if (res.data.code == 1) {
+                this.$message.success(res.data.message)
+                this.initList()
+                this.dialogFormVisible = false
+                this.addform.brandId = ""       //清空输入框数据
+                this.addform.buildingName = ""
+                this.addform.description = ""
+                this.addform.hotelId = ""
+                this.addform.remark = ""
+              } else {
+                this.$message.error(res.data.message)
+              }
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+
     },
     // 取消按钮
     abrogateAdd () {
+      this.dialogFormVisible2 = false
       this.dialogFormVisible = false
     },
 
@@ -424,19 +439,27 @@ export default {
 
     },
     // 编辑建筑确认
-    confirmEditD () {
+    confirmEditD (formName) {
       // console.log(this.editData);
-      this.loading = true
-      editBuilding(this.editData).then(res => {
-        this.loading = false
-        if (res.data.code == 1) {
-          this.$message.success(res.data.message)
-          this.initList()
-          this.dialogFormVisible2 = false
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          editBuilding(this.editData).then(res => {
+            this.loading = false
+            if (res.data.code == 1) {
+              this.$message.success(res.data.message)
+              this.initList()
+              this.dialogFormVisible2 = false
+            } else {
+              this.$message.error(res.data.message)
+            }
+          })
         } else {
-          this.$message.error(res.data.message)
+          console.log('error submit!!');
+          return false;
         }
-      })
+      });
+
     },
     // 查询按钮
     handleSearch () {

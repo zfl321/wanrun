@@ -102,7 +102,7 @@
     </el-row>
     <!-- 编辑的弹框 -->
     <el-dialog title="编辑品牌" :visible.sync="dialogFormVisible2">
-      <el-form :model="editData" :rules="myrules">
+      <el-form :model="editData" :ref="editData" :rules="myrules">
         <el-form-item label="名称" prop="brandName" :label-width="formLabelWidth">
           <el-input v-model="editData.brandName"></el-input>
         </el-form-item>
@@ -117,22 +117,22 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
+        <el-button @click="dialogFormVisible2=false">取 消</el-button>
+        <el-button type="primary" @click="confirmEditD(editData)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
 
     <!-- 新增的弹框 -->
     <el-dialog title="新增品牌" :visible.sync="dialogFormVisible">
-      <el-form :model="addform" :rules="myrules">
-        <el-form-item label="名称" prop="roleName" :label-width="formLabelWidth">
+      <el-form :model="addform" :ref="addform" :rules="myrules">
+        <el-form-item label="名称" prop="brandName" :label-width="formLabelWidth">
           <el-input v-model="addform.brandName" placeholder="请输入品牌名称"></el-input>
         </el-form-item>
-        <el-form-item label="描述" prop="description" :label-width="formLabelWidth">
+        <el-form-item label="描述" :label-width="formLabelWidth">
           <el-input
             type="textarea"
             clearable
-            :rows="10"
+            :rows="5"
             placeholder="请输入内容"
             v-model="addform.description"
           ></el-input>
@@ -140,7 +140,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd(addform)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -247,24 +247,32 @@ export default {
       this.dialogFormVisible = true
     },
     // 确定按钮
-    confirmAdd () {
-      this.loading = true
+    confirmAdd (formName) {
       // console.log(this.addform)
-      addBrand(this.addform)
-        .then((res) => {
-          // console.log(res)
-          this.loading = false
-          if (res.data.code == 1) {
-            this.$message.success(res.data.message)
-            this.initList()
-            this.dialogFormVisible = false
-          } else {
-            this.$message.error(res.data.message)
-          }
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          addBrand(this.addform)
+            .then((res) => {
+              // console.log(res)
+              this.loading = false
+              if (res.data.code == 1) {
+                this.$message.success(res.data.message)
+                this.initList()
+                this.dialogFormVisible = false
+              } else {
+                this.$message.error(res.data.message)
+              }
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+
     },
     // 取消按钮
     abrogateAdd () {
@@ -359,19 +367,27 @@ export default {
       this.dialogFormVisible2 = true
     },
     // 编辑品牌确认
-    confirmEditD () {
-      this.loading = true
-      editBrand(this.editData).then(res => {
-        if (res.data.code == 1) {
-          this.$message.success(res.data.message)
-          this.loading = false
-          this.initList()
-          this.dialogFormVisible2 = false
+    confirmEditD (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          editBrand(this.editData).then(res => {
+            if (res.data.code == 1) {
+              this.$message.success(res.data.message)
+              this.loading = false
+              this.initList()
+              this.dialogFormVisible2 = false
+            } else {
+              this.loading = false
+              this.$message.error(res.data.message)
+            }
+          })
         } else {
-          this.loading = false
-          this.$message.error(res.data.message)
+          console.log('error submit!!');
+          return false;
         }
-      })
+      });
+
     },
     // 查询按钮
     handleSearch () {

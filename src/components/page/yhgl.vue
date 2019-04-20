@@ -201,7 +201,7 @@
     </el-row>
     <!-- 编辑的弹框 -->
     <el-dialog title="编辑用户" :visible.sync="dialogFormVisible2">
-      <el-form :rules="myrules" label-width="70px" ref="editRef">
+      <el-form :rules="myrules" label-width="70px" ref="editRef" :model="editData">
         <el-row :gutter="10">
           <el-col :span="12">
             <el-form-item label="品牌">
@@ -245,8 +245,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="真实姓名">
-              <el-input placeholder="请输入内容" v-model="editData.fullName" clearable class="my-input"></el-input>
+            <el-form-item label="姓名" prop="fullName">
+              <el-input
+                placeholder="请输入真实姓名"
+                v-model="editData.fullName"
+                clearable
+                class="my-input"
+              ></el-input>
             </el-form-item>
           </el-col>
 
@@ -256,13 +261,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="联系电话">
-              <el-input placeholder="请输入内容" v-model="editData.mobile" clearable class="my-input"></el-input>
+            <el-form-item label="手机号" prop="mobile">
+              <el-input placeholder="请输入联系电话" v-model="editData.mobile" clearable class="my-input"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="办公电话">
-              <el-input placeholder="请输入内容" v-model="editData.oph" clearable class="my-input"></el-input>
+            <el-form-item label="座机号">
+              <el-input placeholder="请输入办公电话" v-model="editData.oph" clearable class="my-input"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -305,7 +310,13 @@
 
     <!-- 新增的弹框 -->
     <el-dialog title="新增用户" :visible.sync="dialogFormVisible">
-      <el-form label-position="right" label-width="70px" :rules="myrules" ref="editRef">
+      <el-form
+        label-position="right"
+        label-width="80px"
+        :rules="myrules"
+        :ref="addform"
+        :model="addform"
+      >
         <el-row :gutter="10">
           <el-col :span="12">
             <el-form-item label="品牌">
@@ -320,7 +331,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="门店">
+            <el-form-item label="门店" prop="floorName">
               <el-select v-model="addform.storeId" @change="selectTwo" placeholder="请选择">
                 <el-option
                   v-for="(item,index) in hotelSelectData"
@@ -344,48 +355,43 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="账号">
+            <el-form-item label="账号" prop="username">
               <el-input placeholder="请输入内容" v-model="addform.username" clearable class="my-input"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="密码">
+            <el-form-item label="密码" prop="password">
+              <el-input placeholder="请输入" v-model="addform.password" show-password class="my-input"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="确认密码" prop="password2">
               <el-input
-                placeholder="请输入内容"
-                v-model="addform.password"
+                placeholder="确认密码"
+                v-model="addform.password2"
                 show-password
                 class="my-input"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="确认密码">
-              <el-input
-                placeholder="这里检验还没做"
-                v-model="addform.password"
-                show-password
-                class="my-input"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="真实姓名">
-              <el-input placeholder="请输入内容" v-model="addform.fullName" clearable class="my-input"></el-input>
+            <el-form-item label="姓名" prop="fullName">
+              <el-input placeholder="请输入真实姓名" v-model="addform.fullName" clearable class="my-input"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="邮箱" prop="email">
-              <el-input placeholder="请输入内容" v-model="addform.email" clearable class="my-input"></el-input>
+              <el-input placeholder="请输入" v-model="addform.email" clearable class="my-input"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="联系电话">
-              <el-input placeholder="请输入内容" v-model="addform.mobile" clearable class="my-input"></el-input>
+            <el-form-item label="手机号" prop="mobile">
+              <el-input placeholder="请输入联系电话" v-model="addform.mobile" clearable class="my-input"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="办公电话">
-              <el-input placeholder="请输入内容" v-model="addform.oph" clearable class="my-input"></el-input>
+            <el-form-item label="座机号" prop="phone">
+              <el-input placeholder="请输入办公电话" v-model="addform.oph" clearable class="my-input"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -397,7 +403,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="性别">
+            <el-form-item label="性别" prop="resource">
               <div>
                 <el-radio v-model="addform.ssex" label="1" border>男</el-radio>
                 <el-radio v-model="addform.ssex" label="0" border>女</el-radio>
@@ -413,12 +419,18 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd(addform)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 重置密码的弹框 -->
     <el-dialog title="重置密码" :visible.sync="dialogFormVisible3">
-      <el-form label-position="right" label-width="250px" :rules="myrules" ref="editRef">
+      <el-form
+        label-position="right"
+        label-width="250px"
+        :rules="myrules"
+        ref="editRef"
+        :model="passwordData"
+      >
         <el-row :gutter="10">
           <el-col :span="24">
             <el-form-item label="账号">
@@ -432,9 +444,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="真实姓名">
+            <el-form-item label="姓名" prop="fullName">
               <el-input
-                placeholder="请输入内容"
+                placeholder="请输入真实姓名"
                 v-model="passwordData.fullName"
                 clearable
                 disabled
@@ -443,9 +455,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="密码">
+            <el-form-item label="密码" prop="password">
               <el-input
-                placeholder="请输入内容"
+                placeholder="请输入"
                 v-model="passwordData.password"
                 show-password
                 class="my-input"
@@ -502,18 +514,64 @@ import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   data () {
     /* 自定义校验规则 */
-    let Email = (rule, value, callback) => {
-      // console.log(callback)
-      if (value === '') {
-        callback(new Error('请输入邮箱'))
+    /* 密码自定义校验规则 */
+    let Password = (rule, value, callback) => {
+      if (value == '') {
+        callback(new Error('密码不能为空'))
       } else {
-        let emailReg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
-        if (emailReg.test(value)) {
-          // 校验通过
+        let passwordReg = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,10}$/
+        if (passwordReg.test(value)) {
           callback()
         } else {
-          // 校验不通过
-          callback(new Error('请输入正确的邮箱格式'))
+          callback(new Error('包含大小写和数字 6-10位 无特殊符号'))
+        }
+      }
+    }
+
+    var validatePass2 = (rule, value, callback) => {
+      console.log(value)
+      if (value === '') {
+        callback(new Error('请再次输入密码'));
+      } else if (value !== this.addform.password) {
+        callback(new Error('两次输入密码不一致!'));
+      } else {
+        callback();
+      }
+    };
+    /* 姓名自定义校验规则 */
+    let fullName = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('姓名不能为空'))
+      } else {
+        let nameReg = /^[A-Za-z\u4e00-\u9fa5]{2,20}$/
+        if (nameReg.test(value)) {
+          callback()
+        } else {
+          callback(new Error('请输入2-20位中文或英文'))
+        }
+      }
+    }
+    /* 邮箱自定义校验规则 */
+    let Email = (rule, value, callback) => {
+      let emailReg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+      if (emailReg.test(value)) {
+        // 校验通过
+        callback()
+      } else {
+        // 校验不通过
+        callback(new Error('请输入正确的邮箱格式'))
+      }
+    }
+    /* 手机号自定义校验规则 */
+    let Mobile = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入手机号'))
+      } else {
+        let mobileReg = /^1(3|4|5|7|8)\d{9}$/
+        if (mobileReg.test(value)) {
+          callback()   // 校验通过
+        } else {
+          callback(new Error('请输入正确的手机号'))    // 校验不通过
         }
       }
     }
@@ -581,11 +639,18 @@ export default {
       }],
       // 新增
       addform: {
-        //   floorName: null,  //楼层名称
-        //   description: null,   //建筑描述
-        //   buildingId: null,   //建筑ID
+        floorName: null,      //楼层名称
+        description: null,   //建筑描述
+        buildingId: null,    //建筑ID
+        account: '',          //账号
+        password: '',         //密码
+        fullName: '',         //姓名
+        email: '',            //邮箱
+        mobile: '',           //电话
+        phone: '',            //座机
+        password2: null,
+        storeId: null,
       },
-
       brandSelectData: null,
       hotelSelectData: null,
       buildingSelectData: null,
@@ -609,17 +674,30 @@ export default {
       },
       myrules: {
         floorName: [
-          { required: true, message: '请输入内容', trigger: 'blur' }
+          { required: true, message: '请选择', trigger: 'change' }
         ],
-        address: [
-          { required: true, message: '请输入内容', trigger: 'blur' }
+        password: [
+          { required: true, validator: Password, trigger: ['blur', 'change'] }
+        ],
+        password2: [
+          { required: true, validator: validatePass2, trigger: ['blur', 'change'] }
+        ],
+        fullName: [
+          { required: true, validator: fullName, trigger: ['blur', 'change'] }
+        ],
+        username: [
+          { required: true, message: '请输入账号', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
         email: [
-          { required: true, validator: Email, trigger: ['blur', 'change'] }
+          { required: false, validator: Email, trigger: ['blur', 'change'] }
         ],
-        selectedOptions: [
-          { required: true, message: '请输入内容', trigger: 'blur' }
-        ]
+        mobile: [
+          { required: true, validator: Mobile, trigger: ['blur', 'change'] }
+        ],
+        resource: [
+          { required: true, message: '请选择活动资源', trigger: 'change' }
+        ],
       },
 
       defaultProps: {
@@ -728,23 +806,40 @@ export default {
     },
 
     // 确定按钮
-    confirmAdd () {
+    confirmAdd (formName) {
       // addform.province = selectedOptions
-      this.loading = true
-      addUser(this.addform)
-        .then((res) => {
-          this.loading = false
-          if (res.data.code == 1) {
-            this.$message.success(res.data.message)
-            this.initList()
-            this.dialogFormVisible = false
-          } else {
-            this.$message.error(res.data.message)
-          }
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          addUser(this.addform)
+            .then((res) => {
+              this.loading = false
+              if (res.data.code == 1) {
+                this.$message.success(res.data.message)
+                this.initList()
+                this.dialogFormVisible = false
+                this.addform.floorName = ''      //楼层名称
+                this.addform.description = ''    //建筑描述
+                this.addform.buildingId = ''     //建筑ID
+                this.addform.account = ''        //账号
+                this.addform.password = ''       //密码
+                this.addform.fullName = ''       //姓名
+                this.addform.email = ''          //邮箱
+                this.addform.mobile = ''         //电话
+                this.addform.phone = ''          //座机
+              } else {
+                this.$message.error(res.data.message)
+              }
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+
     },
     // 取消按钮
     abrogateAdd () {

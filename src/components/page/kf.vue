@@ -182,15 +182,15 @@
     </el-row>
     <!-- 编辑的弹框 -->
     <el-dialog title="编辑客房" :visible.sync="dialogFormVisible2" class="astrict">
-      <el-form :model="editData" :rules="myrules">
-        <el-form-item label="主板IP" :label-width="formLabelWidth">
+      <el-form :model="editData" :ref="editData" :rules="myrules">
+        <el-form-item label="主板IP" prop="mainBoardIp" :label-width="formLabelWidth">
           <el-input v-model="editData.mainBoardIp" placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="主板ID" :label-width="formLabelWidth">
+        <el-form-item label="主板ID" prop="mainBoardId" :label-width="formLabelWidth">
           <el-input v-model="editData.mainBoardId" placeholder="请输入内容"></el-input>
         </el-form-item>
 
-        <el-form-item label="房间类型" :label-width="formLabelWidth">
+        <el-form-item label="房间类型" prop="roomType" :label-width="formLabelWidth">
           <el-select v-model="editData.roomType" clearable placeholder="请选择">
             <el-option
               v-for="(item,index) in roomTypeSelectData"
@@ -200,7 +200,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="房间号码" prop="name" :label-width="formLabelWidth">
+        <el-form-item label="房间号码" prop="roomNumber" :label-width="formLabelWidth">
           <el-input v-model="editData.roomNumber" placeholder="请输入内容"></el-input>
         </el-form-item>
         <el-form-item label="描述" :label-width="formLabelWidth">
@@ -209,15 +209,15 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible2=false">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
+        <el-button type="primary" @click="confirmEditD(editData)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
 
     <!-- 新增的弹框 -->
     <el-dialog title="新增客房" :visible.sync="dialogFormVisible" class="astrict">
-      <el-form :model="addform" :rules="myrules">
-        <el-form-item label="品牌" :label-width="formLabelWidth">
-          <el-select v-model="brandId" @change="selectOne" clearable placeholder="请选择">
+      <el-form :model="addform" :ref="addform" :rules="myrules">
+        <el-form-item label="品牌" prop="brandId" :label-width="formLabelWidth">
+          <el-select v-model="addform.brandId" @change="selectOne" clearable placeholder="请选择">
             <el-option
               v-for="(item,index) in brandSelectData"
               :key="index"
@@ -226,8 +226,8 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="门店" :label-width="formLabelWidth">
-          <el-select v-model="hotelId" @change="selectTwo" clearable placeholder="请选择">
+        <el-form-item label="门店" prop="brandId" :label-width="formLabelWidth">
+          <el-select v-model="addform.hotelId" @change="selectTwo" clearable placeholder="请选择">
             <el-option
               v-for="(item,index) in hotelSelectData"
               :key="index"
@@ -236,7 +236,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="建筑" :label-width="formLabelWidth">
+        <el-form-item label="建筑" prop="brandId" :label-width="formLabelWidth">
           <el-select v-model="addform.buildingId" @change="selectThree" clearable placeholder="请选择">
             <el-option
               v-for="(item,index) in buildingSelectData"
@@ -246,7 +246,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="楼层" :label-width="formLabelWidth">
+        <el-form-item label="楼层" prop="brandId" :label-width="formLabelWidth">
           <el-select v-model="addform.floorId" clearable placeholder="请选择">
             <el-option
               v-for="(item,index) in floorSelectData"
@@ -256,7 +256,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="客房类型" :label-width="formLabelWidth">
+        <el-form-item label="客房类型" prop="brandId" :label-width="formLabelWidth">
           <el-select v-model="addform.roomType" clearable placeholder="请选择">
             <el-option
               v-for="(item,index) in roomTypeSelectData"
@@ -281,7 +281,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd(addform)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -316,6 +316,9 @@ export default {
       brandId: null,
       // 新增
       addform: {
+        hotelId: null,
+        brandId: null,
+        buildingId: null,
         floorId: null,  //楼层ID
         remark: null,   //客房描述
         buildingId: null,   //建筑ID
@@ -342,6 +345,12 @@ export default {
         roomNumber: null,   //房间号码 
       },
       myrules: {
+        brandId: [
+          { required: true, message: '请选择', trigger: 'change' }
+        ],
+        roomType: [
+          { required: true, message: '请选择', trigger: 'change' }
+        ],
         roomNumber: [
           { required: true, message: '请输入内容', trigger: 'blur' }
         ],
@@ -475,23 +484,30 @@ export default {
     },
 
     // 确定按钮
-    confirmAdd () {
-      // addform.province = selectedOptions
-      this.loading = true
-      addRoom(this.addform)
-        .then((res) => {
-          this.loading = false
-          if (res.data.code == 1) {
-            this.$message.success(res.data.message)
-            this.initList()
-            this.dialogFormVisible = false
-          } else {
-            this.$message.error(res.data.message)
-          }
-        })
-        .catch(err => {
-          console.log(err)
-        })
+    confirmAdd (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          addRoom(this.addform)
+            .then((res) => {
+              this.loading = false
+              if (res.data.code == 1) {
+                this.$message.success(res.data.message)
+                this.initList()
+                this.dialogFormVisible = false
+              } else {
+                this.$message.error(res.data.message)
+              }
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+
     },
     // 取消按钮
     abrogateAdd () {
@@ -588,19 +604,27 @@ export default {
 
     },
     // 编辑楼层确认
-    confirmEditD () {
+    confirmEditD (formName) {
       // console.log(this.editData);
-      this.loading = true
-      editRoom(this.editData).then(res => {
-        this.loading = false
-        if (res.data.code == 1) {
-          this.$message.success(res.data.message)
-          this.initList()
-          this.dialogFormVisible2 = false
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          editRoom(this.editData).then(res => {
+            this.loading = false
+            if (res.data.code == 1) {
+              this.$message.success(res.data.message)
+              this.initList()
+              this.dialogFormVisible2 = false
+            } else {
+              this.$message.error(res.data.message)
+            }
+          })
         } else {
-          this.$message.error(res.data.message)
+          console.log('error submit!!');
+          return false;
         }
-      })
+      });
+
     },
     // 查询按钮
     handleSearch () {
@@ -620,13 +644,14 @@ export default {
     },
     // 重置按钮
     reset () {
-      this.seekData.buildingId = null,
-        this.seekData.floorId = null,
-        this.seekData.mainBoardIp = null,
-        this.seekData.mainBoardId = null,
-        this.seekData.brandSelectData = null,
-        this.seekData.hotelSelectData = null,
-        this.initList()
+      this.hotelId = null
+      this.brandId = null
+      this.seekData.buildingId = null
+      this.seekData.floorId = null
+      this.seekData.mainBoardIp = null
+      this.seekData.mainBoardId = null
+      this.seekData.brandSelectData = null
+      this.seekData.hotelSelectData = null
     },
     //分页
     handleCurrentChange (cpage) {

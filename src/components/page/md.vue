@@ -119,14 +119,14 @@
     </el-row>
     <!-- 编辑的弹框 -->
     <el-dialog title="编辑门店" :visible.sync="dialogFormVisible2" class="astrict">
-      <el-form :model="editData" :rules="myrules">
+      <el-form :model="editData" :ref="editData" :rules="myrules">
         <el-form-item label="门店名称" prop="name" :label-width="formLabelWidth">
           <el-input v-model="editData.name" placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="门店编号" prop="name" :label-width="formLabelWidth">
+        <el-form-item label="门店编号" prop="hotelCode" :label-width="formLabelWidth">
           <el-input v-model="editData.hotelCode" placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="地址" prop="selectedOptions" :label-width="formLabelWidth">
+        <el-form-item label="地址" prop="brandId" :label-width="formLabelWidth">
           <template>
             <div class="block">
               <el-cascader
@@ -147,14 +147,14 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible2=false">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
+        <el-button type="primary" @click="confirmEditD(editData)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
 
     <!-- 新增的弹框 -->
     <el-dialog title="新增门店" :visible.sync="dialogFormVisible" class="astrict">
-      <el-form :model="addform" :rules="myrules">
-        <el-form-item label="品牌" :label-width="formLabelWidth">
+      <el-form :model="addform" :ref="addform" :rules="myrules">
+        <el-form-item label="品牌" prop="brandId" :label-width="formLabelWidth">
           <el-select v-model="addform.brandId" placeholder="请选择">
             <el-option
               v-for="(item,index) in brandSelectData"
@@ -167,10 +167,10 @@
         <el-form-item label="门店名称" prop="name" :label-width="formLabelWidth">
           <el-input v-model="addform.name" placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="门店编号" prop="name" :label-width="formLabelWidth">
+        <el-form-item label="门店编号" prop="hotelCode" :label-width="formLabelWidth">
           <el-input v-model="addform.hotelCode" placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="地址" prop="selectedOptions" :label-width="formLabelWidth">
+        <el-form-item label="地址" prop="brandId" :label-width="formLabelWidth">
           <template>
             <div class="block">
               <el-cascader
@@ -191,7 +191,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd(addform)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -247,12 +247,15 @@ export default {
         name: [
           { required: true, message: '请输入内容', trigger: 'blur' }
         ],
-        address: [
+        hotelCode: [
           { required: true, message: '请输入内容', trigger: 'blur' }
         ],
-        selectedOptions: [
-          { required: true, message: '请输入内容', trigger: 'blur' }
-        ]
+        brandId: [
+          { required: true, message: '请选择', trigger: 'change' }
+        ],
+        address: [
+          { required: true, message: '请选择', trigger: 'change' }
+        ],
       },
 
       defaultProps: {
@@ -330,33 +333,41 @@ export default {
     },
 
     // 确定按钮
-    confirmAdd () {
-      this.loading = true
-      // addform.province = selectedOptions
-      var provincn = ""
-      for (let i = 0; i < this.selectedOptions.length; i++) {
-        const element = this.selectedOptions[i];
-        var provinc = CodeToText[element]
-        provincn += provinc
-      }
-      this.addform.province = provincn
-      // console.log(this.addform.province)
-      addHotel(this.addform)
-        .then((res) => {
-          // console.log(res)
-          this.loading = false
-          if (res.data.code == 1) {
-            this.initList()
-            this.dialogFormVisible = false
-            this.tableData = res.data.rows
-            this.$message.success(res.data.message);
-          } else {
-            this.$message.error(res.data.message);
+    confirmAdd (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          // addform.province = selectedOptions
+          var provincn = ""
+          for (let i = 0; i < this.selectedOptions.length; i++) {
+            const element = this.selectedOptions[i];
+            var provinc = CodeToText[element]
+            provincn += provinc
           }
-        })
-        .catch(err => {
-          console.log(err)
-        })
+          this.addform.province = provincn
+          // console.log(this.addform.province)
+          addHotel(this.addform)
+            .then((res) => {
+              // console.log(res)
+              this.loading = false
+              if (res.data.code == 1) {
+                this.initList()
+                this.dialogFormVisible = false
+                this.tableData = res.data.rows
+                this.$message.success(res.data.message);
+              } else {
+                this.$message.error(res.data.message);
+              }
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+
     },
     // 取消按钮
     abrogateAdd () {
@@ -448,20 +459,28 @@ export default {
 
     },
     // 编辑门店确认
-    confirmEditD () {
+    confirmEditD (formName) {
       // console.log(this.editData);
-      this.loading = true
-      editHotel(this.editData).then(res => {
-        // console.log(res)
-        this.loading = false
-        if (res.data.code == 1) {
-          this.$message.success(res.data.message)
-          this.initList()
-          this.dialogFormVisible2 = false
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          editHotel(this.editData).then(res => {
+            // console.log(res)
+            this.loading = false
+            if (res.data.code == 1) {
+              this.$message.success(res.data.message)
+              this.initList()
+              this.dialogFormVisible2 = false
+            } else {
+              this.$message.error(res.data.message)
+            }
+          })
         } else {
-          this.$message.error(res.data.message)
+          console.log('error submit!!');
+          return false;
         }
-      })
+      });
+
     },
     // 查询按钮
     handleSearch () {
