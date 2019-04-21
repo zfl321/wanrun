@@ -201,10 +201,10 @@
     </el-row>
     <!-- 编辑的弹框 -->
     <el-dialog title="编辑用户" :visible.sync="dialogFormVisible2">
-      <el-form :rules="myrules" label-width="70px" ref="editRef" :model="editData">
+      <el-form :rules="myrules" label-width="70px" :ref="editData" :model="editData">
         <el-row :gutter="10">
           <el-col :span="12">
-            <el-form-item label="品牌">
+            <el-form-item label="品牌" prop="brandId">
               <el-select v-model="editData.brandId" @change="selectOne" placeholder="请选择">
                 <el-option
                   v-for="(item,index) in brandSelectData"
@@ -216,7 +216,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="门店">
+            <el-form-item label="门店" prop="storeId">
               <el-select v-model="editData.storeId" @change="selectTwo" placeholder="请选择">
                 <el-option
                   v-for="(item,index) in hotelSelectData"
@@ -240,7 +240,7 @@
             </el-form-item>
           </el-col>-->
           <el-col :span="12">
-            <el-form-item label="账号">
+            <el-form-item label="账号" prop="username">
               <el-input placeholder="请输入内容" v-model="editData.username" disabled class="my-input"></el-input>
             </el-form-item>
           </el-col>
@@ -256,7 +256,7 @@
           </el-col>
 
           <el-col :span="12">
-            <el-form-item label="邮箱" prop="email">
+            <el-form-item label="邮箱">
               <el-input placeholder="请输入内容" v-model="editData.email" clearable class="my-input"></el-input>
             </el-form-item>
           </el-col>
@@ -273,7 +273,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="性别">
+            <el-form-item label="性别" prop="ssex">
               <div>
                 <el-radio v-model="editData.ssex" label="1" border>男</el-radio>
                 <el-radio v-model="editData.ssex" label="0" border>女</el-radio>
@@ -281,7 +281,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="状态">
+            <el-form-item label="状态" prop="status">
               <div>
                 <el-radio v-model="editData.status" label="1" border>启用</el-radio>
                 <el-radio v-model="editData.status" label="0" border>停用</el-radio>
@@ -304,7 +304,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible2=false">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
+        <el-button type="primary" @click="confirmEditD(editData)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -319,7 +319,7 @@
       >
         <el-row :gutter="10">
           <el-col :span="12">
-            <el-form-item label="品牌">
+            <el-form-item label="品牌" prop="brandId">
               <el-select v-model="addform.brandId" @change="selectOne" placeholder="请选择">
                 <el-option
                   v-for="(item,index) in brandSelectData"
@@ -331,7 +331,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="门店" prop="floorName">
+            <el-form-item label="门店" prop="storeId">
               <el-select v-model="addform.storeId" @change="selectTwo" placeholder="请选择">
                 <el-option
                   v-for="(item,index) in hotelSelectData"
@@ -343,7 +343,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="角色">
+            <el-form-item label="角色" prop="roleId">
               <el-select v-model="addform.roleId" placeholder="请选择">
                 <el-option
                   v-for="(item,index) in roleSelectData"
@@ -395,7 +395,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="状态">
+            <el-form-item label="状态" prop="status">
               <div>
                 <el-radio v-model="addform.status" label="1" border>启用</el-radio>
                 <el-radio v-model="addform.status" label="0" border>停用</el-radio>
@@ -403,7 +403,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="性别" prop="resource">
+            <el-form-item label="性别" prop="ssex">
               <div>
                 <el-radio v-model="addform.ssex" label="1" border>男</el-radio>
                 <el-radio v-model="addform.ssex" label="0" border>女</el-radio>
@@ -428,7 +428,7 @@
         label-position="right"
         label-width="250px"
         :rules="myrules"
-        ref="editRef"
+        :ref="passwordData"
         :model="passwordData"
       >
         <el-row :gutter="10">
@@ -465,10 +465,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="确认密码">
+            <el-form-item label="确认密码" prop="password4">
               <el-input
-                placeholder="这里检验还没做"
-                v-model="passwordData.password"
+                placeholder="请再次输入密码"
+                v-model="passwordData.password2"
                 show-password
                 class="my-input"
               ></el-input>
@@ -478,7 +478,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateDassword">取 消</el-button>
-        <el-button type="primary" @click="confirmDassword">确 定</el-button>
+        <el-button type="primary" @click="confirmDassword(passwordData)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 查看详情弹窗 -->
@@ -516,6 +516,7 @@ export default {
     /* 自定义校验规则 */
     /* 密码自定义校验规则 */
     let Password = (rule, value, callback) => {
+      // console.log(value)
       if (value == '') {
         callback(new Error('密码不能为空'))
       } else {
@@ -529,10 +530,20 @@ export default {
     }
 
     var validatePass2 = (rule, value, callback) => {
-      console.log(value)
+      // console.log(value)
       if (value === '') {
         callback(new Error('请再次输入密码'));
       } else if (value !== this.addform.password) {
+        callback(new Error('两次输入密码不一致!'));
+      } else {
+        callback();
+      }
+    };
+
+    var validatePass4 = (rule, value, callback) => {
+      if (this.passwordData.password === '') {
+        callback(new Error('请再次输入密码'));
+      } else if (this.passwordData.password2 !== this.passwordData.password) {
         callback(new Error('两次输入密码不一致!'));
       } else {
         callback();
@@ -599,7 +610,8 @@ export default {
       passwordData: {
         username: null,
         fullName: null,
-        password: null,
+        password: '',
+        password2: null,
       },
       dialogFormVisible3: false,
       dialogTableVisible4: false,
@@ -676,11 +688,29 @@ export default {
         floorName: [
           { required: true, message: '请选择', trigger: 'change' }
         ],
+        brandId: [
+          { required: true, message: '请选择', trigger: 'change' }
+        ],
+        storeId: [
+          { required: true, message: '请选择', trigger: 'change' }
+        ],
+        roleId: [
+          { required: true, message: '请选择', trigger: 'change' }
+        ],
+        ssex: [
+          { required: true, message: '请选择', trigger: 'change' }
+        ],
+        status: [
+          { required: true, message: '请选择', trigger: 'change' }
+        ],
         password: [
           { required: true, validator: Password, trigger: ['blur', 'change'] }
         ],
         password2: [
           { required: true, validator: validatePass2, trigger: ['blur', 'change'] }
+        ],
+        password4: [
+          { required: true, validator: validatePass4, trigger: ['blur', 'change'] }
         ],
         fullName: [
           { required: true, validator: fullName, trigger: ['blur', 'change'] }
@@ -689,15 +719,11 @@ export default {
           { required: true, message: '请输入账号', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
-        email: [
-          { required: false, validator: Email, trigger: ['blur', 'change'] }
-        ],
+
         mobile: [
           { required: true, validator: Mobile, trigger: ['blur', 'change'] }
         ],
-        resource: [
-          { required: true, message: '请选择活动资源', trigger: 'change' }
-        ],
+
       },
 
       defaultProps: {
@@ -952,23 +978,31 @@ export default {
       })
     },
     // 编辑用户确认
-    confirmEditD () {
+    confirmEditD (formName) {
       // console.log(this.editData);
-      this.loading = true
-      editUser(this.editData).then(res => {
-        this.loading = false
-        if (res.data.code == 1) {
-          this.$message.success(res.data.message)
-          this.editData.brand = null
-          this.editData.store = null
-          this.editData.roleId = null
-          this.initList()
-          this.dialogFormVisible2 = false
-        } else {
-          this.$message.error(res.data.message)
-        }
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          editUser(this.editData).then(res => {
+            this.loading = false
+            if (res.data.code == 1) {
+              this.$message.success(res.data.message)
+              this.editData.brand = null
+              this.editData.store = null
+              this.editData.roleId = null
+              this.initList()
+              this.dialogFormVisible2 = false
+            } else {
+              this.$message.error(res.data.message)
+            }
 
-      })
+          })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+
     },
     // 查询按钮
     handleSearch () {
@@ -1021,16 +1055,26 @@ export default {
         this.$message.warning("必须且只能选择一个要重置密码的用户")
       }
     },
-    confirmDassword () {
-      editpassword(this.passwordData).then(res => {
-        if (res.data.code == 1) {
-          this.dialogFormVisible3 = false
-          this.$message({
-            message: res.data.message,
-            type: 'success'
-          });
+    confirmDassword (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          editpassword(this.passwordData).then(res => {
+            this.loading = false
+            if (res.data.code == 1) {
+              this.dialogFormVisible3 = false
+              this.$message({
+                message: res.data.message,
+                type: 'success'
+              });
+            }
+          })
+        } else {
+          console.log('error submit!!');
+          return false;
         }
-      })
+      });
+
     },
     abrogateDassword () {
       this.dialogFormVisible3 = false

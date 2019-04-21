@@ -45,7 +45,13 @@
     </div>
     <!-- 重置密码的弹框 -->
     <el-dialog title="重置密码" :visible.sync="dialogFormVisible3">
-      <el-form label-position="right" label-width="250px" :rules="myrules" ref="editRef">
+      <el-form
+        label-position="right"
+        label-width="250px"
+        :rules="myrules"
+        :ref="passwordData"
+        :model="passwordData"
+      >
         <el-row :gutter="10">
           <el-col :span="24">
             <el-form-item label="账号">
@@ -70,7 +76,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="密码">
+            <el-form-item label="密码" prop="password">
               <el-input
                 placeholder="请输入内容"
                 v-model="passwordData.password"
@@ -80,10 +86,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="确认密码">
+            <el-form-item label="确认密码" prop="password2">
               <el-input
-                placeholder="这里检验还没做"
-                v-model="passwordData.password"
+                placeholder="请再次输入密码"
+                v-model="passwordData.password2"
                 show-password
                 class="my-input"
               ></el-input>
@@ -93,7 +99,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateDassword">取 消</el-button>
-        <el-button type="primary" @click="confirmDassword">确 定</el-button>
+        <el-button type="primary" @click="confirmDassword(passwordData)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -103,9 +109,35 @@ import bus from '../common/bus';
 import { editpassword } from '@/api'
 export default {
   data () {
+    /* 密码自定义校验规则 */
+    let Password = (rule, value, callback) => {
+      // console.log(value)
+      if (value == '') {
+        callback(new Error('密码不能为空'))
+      } else {
+        let passwordReg = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,10}$/
+        if (passwordReg.test(value)) {
+          callback()
+        } else {
+          callback(new Error('包含大小写和数字 6-10位 无特殊符号'))
+        }
+      }
+    }
+
+    var validatePass2 = (rule, value, callback) => {
+      // console.log(value)
+      if (value === '') {
+        callback(new Error('请再次输入密码'));
+      } else if (value !== this.passwordData.password) {
+        callback(new Error('两次输入密码不一致!'));
+      } else {
+        callback();
+      }
+    };
     return {
       collapse: false,
       fullscreen: false,
+      loading: false,
       name: 'linxin',
       message: 2,
       // 重置密码数据
@@ -114,14 +146,15 @@ export default {
         username: null,
         fullName: null,
         password: null,
+        password2: null,
       },
       myrules: {
-        floorName: [
-          { required: true, message: '请输入内容', trigger: 'blur' }
+        password: [
+          { required: true, validator: Password, trigger: ['blur', 'change'] }
         ],
-        address: [
-          { required: true, message: '请输入内容', trigger: 'blur' }
-        ]
+        password2: [
+          { required: true, validator: validatePass2, trigger: ['blur', 'change'] }
+        ],
       },
     }
   },
@@ -141,16 +174,26 @@ export default {
       this.dialogFormVisible3 = true
 
     },
-    confirmDassword () {
-      editpassword(this.passwordData).then(res => {
-        if (res.data.code == 1) {
-          this.dialogFormVisible3 = false
-          this.$message({
-            message: res.data.message,
-            type: 'success'
-          });
+    confirmDassword (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          editpassword(this.passwordData).then(res => {
+            this.loading = false
+            if (res.data.code == 1) {
+              this.dialogFormVisible3 = false
+              this.$message({
+                message: res.data.message,
+                type: 'success'
+              });
+            }
+          })
+        } else {
+          console.log('error submit!!');
+          return false;
         }
-      })
+      });
+
     },
     abrogateDassword () {
       this.dialogFormVisible3 = false
@@ -204,6 +247,9 @@ export default {
 }
 </script>
 <style scoped>
+.my-input {
+  max-width: 215px;
+}
 .header {
   position: relative;
   box-sizing: border-box;
