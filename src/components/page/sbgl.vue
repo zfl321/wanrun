@@ -124,8 +124,8 @@
     </el-row>
     <!-- 编辑的弹框 -->
     <el-dialog title="编辑设备" :visible.sync="dialogFormVisible2" class="astrict">
-      <el-form :model="editData" :rules="myrules">
-        <el-form-item label="设备类型" :label-width="formLabelWidth">
+      <el-form :model="editData" :ref="editData" :rules="myrules">
+        <el-form-item label="设备类型" prop="eqType" :label-width="formLabelWidth">
           <el-select v-model="editData.eqType" clearable placeholder="请选择">
             <el-option
               v-for="(item,index) in eqTypeSelectData"
@@ -135,10 +135,10 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="设备名称" prop="mainBoardIp" :label-width="formLabelWidth">
+        <el-form-item label="设备名称" prop="eqName" :label-width="formLabelWidth">
           <el-input v-model="editData.eqName" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="硬件id" :label-width="formLabelWidth">
+        <el-form-item label="硬件id" prop="hardwareId" :label-width="formLabelWidth">
           <el-input v-model="editData.hardwareId" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
         <el-form-item label="描述" :label-width="formLabelWidth">
@@ -152,15 +152,15 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
+        <el-button @click="dialogFormVisible2=false">取 消</el-button>
+        <el-button type="primary" @click="confirmEditD(editData)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
 
     <!-- 新增的弹框 -->
     <el-dialog title="新增设备" :visible.sync="dialogFormVisible" class="astrict">
-      <el-form :model="addform" :rules="myrules">
-        <el-form-item label="设备类型" :label-width="formLabelWidth">
+      <el-form :model="addform" :ref="addform" :rules="myrules">
+        <el-form-item label="设备类型" prop="eqType" :label-width="formLabelWidth">
           <el-select v-model="addform.eqType" clearable placeholder="请选择">
             <el-option
               v-for="(item,index) in eqTypeSelectData"
@@ -170,10 +170,10 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="设备名称" prop="mainBoardIp" :label-width="formLabelWidth">
+        <el-form-item label="设备名称" prop="eqName" :label-width="formLabelWidth">
           <el-input v-model="addform.eqName" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="硬件id" :label-width="formLabelWidth">
+        <el-form-item label="硬件id" prop="hardwareId" :label-width="formLabelWidth">
           <el-input v-model="addform.hardwareId" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
         <el-form-item label="描述" :label-width="formLabelWidth">
@@ -182,7 +182,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd(addform)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -238,13 +238,15 @@ export default {
         id: null
       },
       myrules: {
-        typeName: [
+        eqName: [
           { required: true, message: '请输入内容', trigger: 'blur' }
         ],
-        mainBoardIp: [
+        hardwareId: [
           { required: true, message: '请输入内容', trigger: 'blur' }
         ],
-
+        eqType: [
+          { required: true, message: '请选择', trigger: 'change' }
+        ],
       },
 
       defaultProps: {
@@ -313,24 +315,31 @@ export default {
     },
 
     // 确定按钮
-    confirmAdd () {
-      // addform.province = selectedOptions
+    confirmAdd (formName) {
       // console.log(this.addform)
-      this.loading = true
-      addEq(this.addform)
-        .then((res) => {
-          this.loading = false
-          if (res.data.code == 1) {
-            this.$message.success(res.data.message)
-            this.initList()
-            this.dialogFormVisible = false
-          } else {
-            this.$message.error(res.data.message)
-          }
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          addEq(this.addform)
+            .then((res) => {
+              this.loading = false
+              if (res.data.code == 1) {
+                this.$message.success(res.data.message)
+                this.initList()
+                this.dialogFormVisible = false
+              } else {
+                this.$message.error(res.data.message)
+              }
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+
     },
     // 取消按钮
     abrogateAdd () {
@@ -420,19 +429,27 @@ export default {
 
     },
     // 编辑楼层确认
-    confirmEditD () {
+    confirmEditD (formName) {
       // console.log(this.editData);
-      this.loading = true
-      editEq(this.editData).then(res => {
-        this.loading = false
-        if (res.data.code == 1) {
-          this.$message.success(res.data.message)
-          this.initList()
-          this.dialogFormVisible2 = false
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          editEq(this.editData).then(res => {
+            this.loading = false
+            if (res.data.code == 1) {
+              this.$message.success(res.data.message)
+              this.initList()
+              this.dialogFormVisible2 = false
+            } else {
+              this.$message.error(res.data.message)
+            }
+          })
         } else {
-          this.$message.error(res.data.message)
+          console.log('error submit!!');
+          return false;
         }
-      })
+      });
+
     },
     // 查询按钮
     handleSearch () {

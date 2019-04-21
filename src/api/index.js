@@ -6,8 +6,8 @@ import { MessageBox } from 'element-ui';
 axios.defaults.withCredentials = true
 // console.log(axios.defaults)
 
-// axios.defaults.baseURL = 'http://172.16.106.35:9527'
-axios.defaults.baseURL = 'http://47.92.64.56:9527'
+axios.defaults.baseURL = 'http://172.16.109.204:9527'
+// axios.defaults.baseURL = 'http://47.92.64.56:9527'
 // axios.defaults.baseURL = 'http://192.168.1.51:9527'
 // axios.defaults.baseURL = 'http://t2fkp3.natappfree.cc'
 // 登陆函数

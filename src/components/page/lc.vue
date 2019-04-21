@@ -161,6 +161,7 @@
             style="width: 100%;"
             v-model="addform.floorName"
             :min="1"
+            controls-position="right"
             label="描述文字"
             placeholder="输入的数字代表要添加多少楼层"
           ></el-input-number>
