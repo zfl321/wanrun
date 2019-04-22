@@ -41,29 +41,42 @@
     </el-card>
     <!-- 编辑的弹框 -->
     <el-dialog title="编辑菜单或按钮" :visible.sync="dialogFormVisible2" class="astrict">
-      <el-form :model="ediEform">
-        <el-form-item label="类型	" :label-width="formLabelWidth">
+      <el-form :model="ediEform" :ref="ediEform" :rules="rules">
+        <el-form-item label="类型	" prop="type" :label-width="formLabelWidth">
           <div>
             <el-radio
               v-model="ediEform.type"
               label="0"
               border
               @change="handleCheckAllChange"
-              :disabled="disabled"
+              disabled
             >菜单</el-radio>
-            <el-radio v-model="ediEform.type" label="1" border @change="handleCheckAllChange">按钮</el-radio>
+            <el-radio
+              v-model="ediEform.type"
+              label="1"
+              border
+              @change="handleCheckAllChange"
+              disabled
+            >按钮</el-radio>
           </div>
         </el-form-item>
-        <el-form-item label="名称" :label-width="formLabelWidth">
+        <el-form-item label="名称" prop="menuName" :label-width="formLabelWidth">
           <el-input v-model="ediEform.menuName" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="权限	" :label-width="formLabelWidth">
+        <el-form-item label="权限	" prop="perms" :label-width="formLabelWidth">
           <el-input v-model="ediEform.perms" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
         <el-form-item label="图标	" :label-width="formLabelWidth">
-          <el-input v-model="ediEform.icon" clearable placeholder="请输入内容" :disabled="disabled"></el-input>
+          <el-input
+            v-model="ediEform.icon"
+            clearable
+            placeholder="请输入内容"
+            :disabled="disabled"
+            ref="inputRef"
+            @focus="focusInput"
+          ></el-input>
         </el-form-item>
-        <el-form-item label="地址	" :label-width="formLabelWidth">
+        <el-form-item label="地址	" prop="path" :label-width="formLabelWidth">
           <el-input v-model="ediEform.path" clearable placeholder="请输入内容" :disabled="disabled"></el-input>
         </el-form-item>
         <el-form-item label="排序	" :label-width="formLabelWidth">
@@ -91,29 +104,43 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible2=false">取 消</el-button>
-        <el-button type="primary" @click="confirmEdit" :loading="loading">确 定</el-button>
+        <el-button type="primary" @click="confirmEdit(ediEform)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 新增的弹框 -->
     <el-dialog title="新增菜单或按钮" :visible.sync="dialogFormVisible" class="astrict">
-      <el-form :model="addform">
-        <el-form-item label="类型	" :label-width="formLabelWidth">
+      <el-form :model="addform" :ref="addform" :rules="rules">
+        <el-form-item label="类型 " prop="type" :label-width="formLabelWidth">
           <div>
             <el-radio v-model="addform.type" label="0" border @change="handleCheckAllChange">菜单</el-radio>
             <el-radio v-model="addform.type" label="1" border @change="handleCheckAllChange">按钮</el-radio>
           </div>
         </el-form-item>
-        <el-form-item label="名称" :label-width="formLabelWidth">
+        <el-form-item label="名称 " prop="menuName" :label-width="formLabelWidth">
           <el-input v-model="addform.menuName" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="权限	" :label-width="formLabelWidth">
+        <el-form-item label="权限	" prop="perms" :label-width="formLabelWidth">
           <el-input v-model="addform.perms" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
         <el-form-item label="图标	" :label-width="formLabelWidth">
-          <el-input v-model="addform.icon" clearable placeholder="请输入内容" :disabled="disabled"></el-input>
+          <el-input
+            v-model="addform.icon"
+            clearable
+            placeholder="请输入内容"
+            :disabled="disabled"
+            ref="inputRef1"
+            @focus="focusInput"
+          ></el-input>
         </el-form-item>
-        <el-form-item label="地址	" :label-width="formLabelWidth">
-          <el-input v-model="addform.path" clearable placeholder="请输入内容" :disabled="disabled"></el-input>
+        <el-form-item label="地址	" prop="path" :label-width="formLabelWidth">
+          <el-input
+            v-model="addform.path"
+            clearable
+            placeholder="请输入内容"
+            :disabled="disabled"
+            ref="inputRef"
+            @focus="focusInput"
+          ></el-input>
         </el-form-item>
         <el-form-item label="排序	" :label-width="formLabelWidth">
           <el-input-number
@@ -139,7 +166,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible=false">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd(addform)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -149,6 +176,21 @@ import { getMenuList, menuAdd, editMenu, delMenu } from '@/api'
 export default {
   data () {
     return {
+      rules: {
+        menuName: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ],
+        perms: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ],
+        path: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ],
+        type: [
+          { required: true, message: '请选择', trigger: 'change' }
+        ],
+
+      },
       tableData: null,
       formLabelWidth: "100px",
       loading: false,
@@ -201,25 +243,32 @@ export default {
     addBtn () {
       this.dialogFormVisible = true
     },
-    confirmAdd () {
-      let number
-      this.addform.parentId = this.$refs.tree.getCheckedKeys()[0]
-      this.loading = true
-      menuAdd(this.addform)
-        .then((res) => {
-          this.loading = false
-          if (res.data.code == 1) {
-            this.$message.success(res.data.message)
-            this.initList()
-            this.dialogFormVisible = false
-          } else {
-            this.$message.error(res.data.message)
-          }
-        })
-        .catch(err => {
-          this.loading = false
-          console.log(err)
-        })
+    confirmAdd (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          let number
+          this.addform.parentId = this.$refs.tree.getCheckedKeys()[0]
+          this.loading = true
+          menuAdd(this.addform)
+            .then((res) => {
+              this.loading = false
+              if (res.data.code == 1) {
+                this.$message.success(res.data.message)
+                this.initList()
+                this.dialogFormVisible = false
+              } else {
+                this.$message.error(res.data.message)
+              }
+            })
+            .catch(err => {
+              this.loading = false
+              console.log(err)
+            })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
     // 编辑
     handleEdit (row) {
@@ -233,25 +282,34 @@ export default {
       this.ediEform.menuId = row.id
       if (row.type == 1) {
         this.disabled = true
+        this.rules.path[0].required = false
       } else {
         this.disabled = false
+        this.rules.path[0].required = true
       }
       this.dialogFormVisible2 = true
     },
     //确认
-    confirmEdit () {
-      this.loading = true
-      this.ediEform.parentId = this.ediEform.parentId[0]
-      editMenu(this.ediEform).then(res => {
-        this.loading = false
-        if (res.data.code == 1) {
-          this.$message.success(res.data.message)
-          this.initList()
-          this.dialogFormVisible2 = false
+    confirmEdit (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          this.ediEform.parentId = this.ediEform.parentId[0]
+          editMenu(this.ediEform).then(res => {
+            this.loading = false
+            if (res.data.code == 1) {
+              this.$message.success(res.data.message)
+              this.initList()
+              this.dialogFormVisible2 = false
+            } else {
+              this.$message.error(res.data.message)
+            }
+          })
         } else {
-          this.$message.error(res.data.message)
+          console.log('error submit!!');
+          return false;
         }
-      })
+      });
     },
     //删除
     handleDelete (row) {
@@ -286,8 +344,17 @@ export default {
         this.path = null //路径
         this.icon = null //图标
         this.orderNum = null //排序
+        this.rules.path[0].required = false
       } else {
         this.disabled = false
+        this.rules.path[0].required = true
+      }
+    },
+    focusInput () {
+      if (!this.addform.type && this.ediEform.type == null) {
+        this.$message.error('请先选择类型')
+        this.$refs.inputRef.blur()
+        this.$refs.inputRef1.blur()
       }
     }
 

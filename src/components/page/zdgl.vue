@@ -63,32 +63,32 @@
     </el-card>
     <!-- 新增的弹框 -->
     <el-dialog title="新增字典" :visible.sync="dialogFormVisible" class="astrict">
-      <el-form :model="addform">
-        <el-form-item label="参数名" :label-width="formLabelWidth">
+      <el-form :model="addform" :ref="addform" :rules="rules">
+        <el-form-item label="参数名" prop="keyy" :label-width="formLabelWidth">
           <el-input v-model="addform.keyy" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="参数值	" :label-width="formLabelWidth">
+        <el-form-item label="参数值	" prop="valuee" :label-width="formLabelWidth">
           <el-input v-model="addform.valuee" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd" :loading="loading">确 定</el-button>
+        <el-button type="primary" @click="confirmAdd(addform)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 编辑的弹框 -->
     <el-dialog title="编辑字典" :visible.sync="dialogFormVisible2" class="astrict">
-      <el-form :model="editdform">
-        <el-form-item label="参数名" :label-width="formLabelWidth">
+      <el-form :model="editdform" :ref="editdform" :rules="rules">
+        <el-form-item label="参数名" prop="keyy" :label-width="formLabelWidth">
           <el-input v-model="editdform.keyy" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="参数值	" :label-width="formLabelWidth">
+        <el-form-item label="参数值	" prop="valuee" :label-width="formLabelWidth">
           <el-input v-model="editdform.valuee" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible2=false">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD" :loading="loading">确 定</el-button>
+        <el-button type="primary" @click="confirmEditD(editdform)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -98,6 +98,14 @@ import { getDictList, addDict, delDict, editDict } from '@/api'
 export default {
   data () {
     return {
+      rules: {
+        keyy: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ],
+        valuee: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ]
+      },
       formLabelWidth: "100px",
       loading: false,
       dialogFormVisible: null,
@@ -228,24 +236,32 @@ export default {
 
     },
     // 确定按钮
-    confirmAdd () {
-      this.loading = true
-      addDict(this.addform)
-        .then((res) => {
-          this.loading = false
-          if (res.data.code == 1) {
-            this.$message.success(res.data.message)
-            this.initList()
-            this.tableData = null
-            this.dialogFormVisible = false
-          } else {
-            this.$message.error(res.data.message)
-          }
-        })
-        .catch(err => {
-          this.loading = false
-          console.log(err)
-        })
+    confirmAdd (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          addDict(this.addform)
+            .then((res) => {
+              this.loading = false
+              if (res.data.code == 1) {
+                this.$message.success(res.data.message)
+                this.initList()
+                this.tableData = null
+                this.dialogFormVisible = false
+              } else {
+                this.$message.error(res.data.message)
+              }
+            })
+            .catch(err => {
+              this.loading = false
+              console.log(err)
+            })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+
     },
     // 取消按钮
     abrogateAdd () {
@@ -260,20 +276,28 @@ export default {
 
     },
     // 编辑确认
-    confirmEditD () {
+    confirmEditD (formName) {
       // console.log(this.editData);
-      this.loading = true
-      editDict(this.editdform).then(res => {
-        this.loading = false
-        if (res.data.code == 1) {
-          this.$message.success(res.data.message)
-          this.initList()
-          this.tableData = null
-          this.dialogFormVisible2 = false
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          editDict(this.editdform).then(res => {
+            this.loading = false
+            if (res.data.code == 1) {
+              this.$message.success(res.data.message)
+              this.initList()
+              this.tableData = null
+              this.dialogFormVisible2 = false
+            } else {
+              this.$message.error(res.data.message)
+            }
+          })
         } else {
-          this.$message.error(res.data.message)
+          console.log('error submit!!');
+          return false;
         }
-      })
+      });
+
     },
     //列表点击事件
     listClick (obj) {

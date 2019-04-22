@@ -128,7 +128,7 @@
             ref="multipleTable"
             :data="tableData"
             tooltip-effect="dark"
-            height="54vh"
+            :height="dv"
             style="width: 100%"
             @selection-change="handleSelectionChange"
           >
@@ -367,7 +367,6 @@ export default {
         children: 'children',
         label: 'title'
       },
-
     }
   },
   computed: {
@@ -380,6 +379,10 @@ export default {
     },
     showupdate: function () {
       return this.userJurisdiction.indexOf("room:update")
+    },
+    dv: function windowHeight () {
+      var de = document.documentElement;
+      return (self.innerHeight || (de && de.offsetHeight) || document.body.offsetHeight) - 306;
     }
   },
   // 注册表格组件
