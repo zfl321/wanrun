@@ -101,7 +101,7 @@
             <el-button @click="addBtn" v-if="showadd!=-1">新增</el-button>
             <el-button @click="batchesDelete" v-if="showdelete!=-1">批量删除</el-button>
             <el-button @click="resetPassword" v-if="showreset!=-1">重置密码</el-button>
-            <div style="color: #fff;">.</div>
+            <div style="color: #fff; display: inline-block;">.</div>
           </el-col>
           <el-col :span="5" class="reset-button">
             <el-button type="primary" @click="handleSearch">查询</el-button>
@@ -128,7 +128,7 @@
             ref="multipleTable"
             :data="tableData"
             tooltip-effect="dark"
-            height="54vh"
+            :height="dv"
             style="width: 100%"
             @selection-change="handleSelectionChange"
           >
@@ -201,7 +201,7 @@
     </el-row>
     <!-- 编辑的弹框 -->
     <el-dialog title="编辑用户" :visible.sync="dialogFormVisible2">
-      <el-form :rules="myrules" label-width="70px" :ref="editData" :model="editData">
+      <el-form :rules="myrules" label-width="80px" :ref="editData" :model="editData">
         <el-row :gutter="10">
           <el-col :span="12">
             <el-form-item label="品牌" prop="brandId">
@@ -227,8 +227,8 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <!-- <el-col :span="12">
-            <el-form-item label="角色">
+          <el-col :span="12">
+            <el-form-item label="角色" prop="roleId">
               <el-select v-model="editData.roleId" placeholder="请选择">
                 <el-option
                   v-for="(item,index) in roleSelectData"
@@ -238,9 +238,9 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-          </el-col>-->
+          </el-col>
           <el-col :span="12">
-            <el-form-item label="账号" prop="username">
+            <el-form-item label="账号">
               <el-input placeholder="请输入内容" v-model="editData.username" disabled class="my-input"></el-input>
             </el-form-item>
           </el-col>
@@ -509,7 +509,7 @@
   </div>
 </template>
 <script>
-import { getUserList, addUser, editpassword, getRoleSelect, getHotelSelect, getBuildingSelect, delUser, getRights, getBrandSelect, editUser, getHotelSeek } from '@/api'
+import { getUserList, addUser, editpassword, nameVerify, getRoleSelect, getHotelSelect, getBuildingSelect, delUser, getRights, getBrandSelect, editUser, getHotelSeek } from '@/api'
 import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   data () {
@@ -559,6 +559,25 @@ export default {
           callback()
         } else {
           callback(new Error('请输入2-20位中文或英文'))
+        }
+      }
+    }
+    /* 用户名重复校验 */
+    let Verify = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('姓名不能为空'))
+      } else {
+        let nameReg = /^[a-zA-Z0-9_-]{4,16}$/
+        if (nameReg.test(value)) {
+          nameVerify('user', { username: value }).then(res => {
+            if (res.data) {
+              callback()
+            } else {
+              callback(new Error('你输入的已存在，请重新输入'))
+            }
+          })
+        } else {
+          callback(new Error('只能输入4-16位字母，数字，下划线，减号'))
         }
       }
     }
@@ -655,6 +674,7 @@ export default {
         description: null,   //建筑描述
         buildingId: null,    //建筑ID
         account: '',          //账号
+        username: '',          //账号
         password: '',         //密码
         fullName: '',         //姓名
         email: '',            //邮箱
@@ -716,8 +736,7 @@ export default {
           { required: true, validator: fullName, trigger: ['blur', 'change'] }
         ],
         username: [
-          { required: true, message: '请输入账号', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, validator: Verify, trigger: 'blur' },
         ],
 
         mobile: [
@@ -747,6 +766,10 @@ export default {
     showreset: function () {
       return this.userJurisdiction.indexOf("user:reset")
     },
+    dv: function windowHeight () {
+      var de = document.documentElement;
+      return (self.innerHeight || (de && de.offsetHeight) || document.body.offsetHeight) - 306;
+    }
   },
   // 注册表格组件
   components: {
@@ -847,7 +870,7 @@ export default {
                 this.addform.floorName = ''      //楼层名称
                 this.addform.description = ''    //建筑描述
                 this.addform.buildingId = ''     //建筑ID
-                this.addform.account = ''        //账号
+                this.addform.username = ''        //账号
                 this.addform.password = ''       //密码
                 this.addform.fullName = ''       //姓名
                 this.addform.email = ''          //邮箱

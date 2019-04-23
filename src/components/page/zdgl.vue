@@ -8,13 +8,19 @@
             <el-button @click="addBtnl" v-if="showadd!=-1" type="primary">新增</el-button>
             <el-button v-if="showdelete!=-1" @click="handleDeletebtn">删除</el-button>
           </el-row>
-          <el-row v-for="(item,index) in data" :key="index">
-            <el-button
-              plain
-              icon="el-icon-circle-plus-outline"
-              @click="listClick(item)"
-              style="margin-left: 0;border:0 ;"
-            >{{item.value}}</el-button>
+          <el-row>
+            <el-menu default-active="2" class="el-menu-vertical-demo">
+              <el-menu-item
+                :index="item.id"
+                text-color="#303133"
+                v-for="(item,index) in data"
+                :key="index"
+                @click="listClick(item)"
+              >
+                <i class="el-icon-circle-plus-outline"></i>
+                <span slot="title">{{item.value}}</span>
+              </el-menu-item>
+            </el-menu>
           </el-row>
         </el-aside>
         <!-- 主要内容 -->

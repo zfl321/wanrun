@@ -40,7 +40,12 @@
       </el-table>
     </el-card>
     <!-- 编辑的弹框 -->
-    <el-dialog title="编辑菜单或按钮" :visible.sync="dialogFormVisible2" class="astrict">
+    <el-dialog
+      title="编辑菜单或按钮"
+      :visible.sync="dialogFormVisible2"
+      @close="dialogClose"
+      class="astrict"
+    >
       <el-form :model="ediEform" :ref="ediEform" :rules="rules">
         <el-form-item label="类型	" prop="type" :label-width="formLabelWidth">
           <div>
@@ -273,13 +278,13 @@ export default {
     // 编辑
     handleEdit (row) {
       this.ediEform.parentId = [row.parentId]
+      this.ediEform.menuId = row.id
       this.ediEform.menuName = row.text
       this.ediEform.perms = row.permission
       this.ediEform.path = row.path
       this.ediEform.icon = row.icon
       this.ediEform.orderNum = row.order
       this.ediEform.type = row.type
-      this.ediEform.menuId = row.id
       if (row.type == 1) {
         this.disabled = true
         this.rules.path[0].required = false
@@ -356,6 +361,11 @@ export default {
         this.$refs.inputRef.blur()
         this.$refs.inputRef1.blur()
       }
+    },
+    //编辑关闭事件
+    dialogClose () {
+      this.ediEform.parentId = null
+      this.$refs.tree.setCheckedKeys([]);
     }
 
   }

@@ -7,8 +7,8 @@ axios.defaults.withCredentials = true
 // console.log(axios.defaults)
 
 // axios.defaults.baseURL = 'http://172.16.109.204:9527'
-axios.defaults.baseURL = 'http://47.92.64.56:9527'
-// axios.defaults.baseURL = 'http://192.168.1.51:9527'
+// axios.defaults.baseURL = 'http://47.92.64.56:9527'
+axios.defaults.baseURL = 'http://192.168.1.57:9527'
 // axios.defaults.baseURL = 'http://t2fkp3.natappfree.cc'
 // 登陆函数
 export const login = function (obj) {
@@ -16,6 +16,8 @@ export const login = function (obj) {
 }
 // 用户菜单权限列表获取
 export const getUserJurisdiction = obj => axios.get('menu/' + obj)
+// 名称校验
+export const nameVerify = (name, obj) => axios.get(`${name}/check`, { params: obj })
 
 // 用户数据列表获取
 export const getUserList = obj => axios.get('user', { params: obj })
@@ -106,6 +108,13 @@ export const getLoglList = (obj) => axios.get('log', { params: obj })
 export const getDictList = (obj) => axios.get('dict', { params: obj })
 // 客房监控查询
 export const getRoomStatusList = (obj) => axios.get('roomStatus', { params: obj })
+
+// 获取房间设备信息
+export const getRoomInfo = (id) => axios.get('eq/getInfo/' + 'a50540c0-5b4b-11d9-8e62-3999def180b4')
+
+// 客房事件列表
+export const getRoomStatused = (obj) => axios.get('roomStatused', { params: obj })
+
 // 故障信息查询
 export const getDeviceFaultList = (obj) => axios.get('deviceFault', { params: obj })
 // 故障监控查询

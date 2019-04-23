@@ -123,7 +123,7 @@
   </div>
 </template>
 <script>
-import { delLog, getLoglList, getBrandSelect, getHotelSelect, exportLog } from '@/api'
+import { delLog, getLoglList, getBrandSelect, getHotelSelect } from '@/api'
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
 export default {
@@ -219,12 +219,7 @@ export default {
       }
 
     },
-    // 导出
-    exportl () {
-      exportLog().then(() => {
 
-      })
-    },
     exportExcel () {
       /* generate workbook object from table */
       var wb = XLSX.utils.table_to_book(document.querySelector('#out-table'))

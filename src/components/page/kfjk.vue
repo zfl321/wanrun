@@ -1,10 +1,12 @@
 <template>
-  <div class="my-box" v-loading="loading">
-    <el-row class="notice">
+  <div class="my-box roomPage" v-loading="loading">
+    <el-row class="notice" v-if="this.noticeList != false">
       <!-- <div>消息通知</div> -->
       <div class="notice_list">
         <div class="animate">
-          <span v-for="(item, index) in noticeList" :key="index">{{item}}</span>
+          <span
+            v-for="(item, index) in noticeList"
+          >{{item.buildingName + item.floorName + item.roomNumber}}:{{ item.status }}</span>
         </div>
       </div>
       <span class="watch_all" @click="openNotice">查看全部</span>
@@ -18,7 +20,12 @@
               <el-row :gutter="10">
                 <el-col :span="6">
                   <el-form-item label="品牌">
-                    <el-select v-model="brandId" @change="selectOne" clearable placeholder="请选择">
+                    <el-select
+                      v-model="seekData.brandId"
+                      @change="selectOne"
+                      clearable
+                      placeholder="请选择"
+                    >
                       <el-option
                         v-for="(item,index) in brandSelectData"
                         :key="index"
@@ -30,7 +37,12 @@
                 </el-col>
                 <el-col :span="6">
                   <el-form-item label="门店">
-                    <el-select v-model="hotelId" @change="selectTwo" clearable placeholder="请选择">
+                    <el-select
+                      v-model="seekData.hotelId"
+                      @change="selectTwo"
+                      clearable
+                      placeholder="请选择"
+                    >
                       <el-option
                         v-for="(item,index) in hotelSelectData"
                         :key="index"
@@ -96,7 +108,7 @@
                   </el-col>
                   <el-col :span="6">
                     <el-form-item label="出租情况">
-                      <el-select v-model="seekData.floorId" clearable placeholder="请选择">
+                      <el-select v-model="seekData.rent" clearable placeholder="请选择">
                         <el-option
                           v-for="(item,index) in rentSelectData"
                           :key="index"
@@ -108,7 +120,7 @@
                   </el-col>
                   <el-col :span="6">
                     <el-form-item label="识别身份">
-                      <el-select v-model="seekData.floorId" clearable placeholder="请选择">
+                      <el-select v-model="seekData.identity" clearable placeholder="请选择">
                         <el-option
                           v-for="(item,index) in identitySelectData"
                           :key="index"
@@ -122,7 +134,7 @@
                 <el-row>
                   <el-col :span="6">
                     <el-form-item label="门磁状态">
-                      <el-select v-model="seekData.floorId" clearable placeholder="请选择">
+                      <el-select v-model="seekData.doorWarning" clearable placeholder="请选择">
                         <el-option
                           v-for="(item,index) in mcSelectData"
                           :key="index"
@@ -134,7 +146,7 @@
                   </el-col>
                   <el-col :span="6">
                     <el-form-item label="实时状态">
-                      <el-select v-model="seekData.floorId" clearable placeholder="请选择">
+                      <el-select v-model="seekData.status" clearable placeholder="请选择">
                         <el-option
                           v-for="(item,index) in RTSelectData"
                           :key="index"
@@ -146,7 +158,7 @@
                   </el-col>
                   <el-col :span="6">
                     <el-form-item label="SOS状态">
-                      <el-select v-model="seekData.floorId" clearable placeholder="请选择">
+                      <el-select v-model="seekData.sos" clearable placeholder="请选择">
                         <el-option
                           v-for="(item,index) in sosSelectData"
                           :key="index"
@@ -158,7 +170,7 @@
                   </el-col>
                   <el-col :span="6">
                     <el-form-item label="退房状态">
-                      <el-select v-model="seekData.floorId" clearable placeholder="请选择">
+                      <el-select v-model="seekData.checkout" clearable placeholder="请选择">
                         <el-option
                           v-for="(item,index) in outSelectData"
                           :key="index"
@@ -172,7 +184,7 @@
                 <el-row>
                   <el-col :span="6">
                     <el-form-item label="温度状态">
-                      <el-select v-model="seekData.floorId" clearable placeholder="请选择">
+                      <el-select v-model="seekData.temp" clearable placeholder="请选择">
                         <el-option
                           v-for="(item,index) in temperatureSelectData"
                           :key="index"
@@ -189,10 +201,8 @@
         </el-collapse-transition>
         <!-- 按钮行 -->
         <el-row>
-          <el-col :span="19">
-            <el-button @click="addBtn">新增</el-button>
-          </el-col>
-          <el-col :span="5" class="reset-button">
+          <div class="reset-button">
+            <!-- <el-button>所有房间</el-button> -->
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="reset">重置</el-button>
             <el-button plain class="my-icont" @click="fold">
@@ -205,7 +215,7 @@
                 <i class="el-icon-arrow-down"></i>
               </div>
             </el-button>
-          </el-col>
+          </div>
         </el-row>
       </el-card>
     </el-row>
@@ -213,26 +223,14 @@
     <el-row>
       <el-card shadow="always">
         <el-collapse v-model="activeNames" @change="handleChange">
-          <!-- <el-collapse-item
-            :title="tableData.buildingName+'>'+tableData.floorName"
-            name="1"
-            v-for="(item,index) in tableData"
-            :key="index"
-          >
-            <el-card shadow="hover">房间</el-card>
-            <el-card shadow="hover">房间</el-card>
-            <el-card shadow="hover">房间</el-card>
-            <el-card shadow="hover">房间</el-card>
-            <el-card shadow="hover">房间</el-card>
-          </el-collapse-item>-->
-          <el-collapse-item name="1">
+          <el-collapse-item v-for="(item, index) in tableData" :name="item.id">
             <template slot="title">
               <div
                 class="building"
                 style="display: inline-flex;flex-direction: row;align-items: center;"
               >
                 <img src="../../../static/images/icon/buildingName.png" style="margin-right: 5px;">
-                <span>UP智谷B1栋</span>
+                <span>{{item.buildingName}}</span>
               </div>
               <div
                 class="floor"
@@ -242,283 +240,67 @@
                   src="../../../static/images/icon/floor.png"
                   style="margin-right: 5px;margin-left: 5px;"
                 >
-                <span>二楼</span>
+                <span>{{item.floorName}}</span>
               </div>
             </template>
-            <el-card shadow="hover" @click.native="openDialog">
+            <el-card
+              shadow="hover"
+              @click.native="openDialog(item1)"
+              v-for="(item1, index) in item.roomStatusRealtimeList"
+            >
               <div class="room_item">
                 <span class="room_num">
-                  <span>1501</span>
-                  <img src="../../../static/images/icon/i_sos.png">
+                  <span>{{item1.roomNumber}}</span>
+                  <img src="../../../static/images/icon/i_sos.png" v-if="item1.sos">
                 </span>
                 <div class="room_info">
-                  <el-button size="mini" title="客人卡">
+                  <el-button size="mini" title="管理卡" v-if="item1.identity == 0">
+                    <img src="../../../static/images/icon/i_identity6.png" class="room_status">
+                  </el-button>
+                  <el-button size="mini" title="服务员卡" v-if="item1.identity == 1">
+                    <img src="../../../static/images/icon/i_identity8.png" class="room_status">
+                  </el-button>
+                  <el-button size="mini" title="客人卡" v-if="item1.identity == 2">
                     <img src="../../../static/images/icon/i_identity9.png" class="room_status">
                   </el-button>
+                  <el-button size="mini" title="无人" v-if="item1.identity == 3">
+                    <img src="../../../static/images/icon/i_identity0.png" class="room_status">
+                  </el-button>
                   <div class="temperature">
-                    <span class="room_temperature">26</span>
+                    <span class="room_temperature">{{item1.temperature}}</span>
                     <span class="room_unit">℃</span>
                   </div>
                 </div>
                 <div class="room_icon">
-                  <el-button size="mini" title="请勿打扰">
+                  <el-button size="mini" title="请勿打扰" v-if="item1.status == 1">
                     <img src="../../../static/images/icon/i_dnd.png">
                   </el-button>
-                  <el-button size="mini" title="退房">
+                  <el-button size="mini" title="退房" v-if="item1.checkout">
                     <img src="../../../static/images/icon/i_checkout.png">
                   </el-button>
                   <el-button size="mini" title="风机(高)">
                     <img src="../../../static/images/icon/i_speed3.png">
                   </el-button>
-                  <el-button size="mini" title="门磁报警">
+                  <el-button size="mini" title="门磁报警" v-if="item1.doorWarning">
                     <img src="../../../static/images/icon/i_doorwarning.png">
                   </el-button>
-                  <el-button size="mini" title="请即清理">
-                    <img src="../../../static/images/icon/clear_room.png">
-                  </el-button>
-                </div>
-              </div>
-            </el-card>
-            <el-card shadow="hover" @click.native="openDialog">
-              <div class="room_item">
-                <span class="room_num">
-                  <span>1501</span>
-                  <img src="../../../static/images/icon/i_sos.png">
-                </span>
-                <div class="room_info">
-                  <el-button size="mini" title="客人卡">
-                    <img src="../../../static/images/icon/i_identity9.png" class="room_status">
-                  </el-button>
-                  <div class="temperature">
-                    <span class="room_temperature">26</span>
-                    <span class="room_unit">℃</span>
-                  </div>
-                </div>
-                <div class="room_icon">
-                  <el-button size="mini" title="请勿打扰">
-                    <img src="../../../static/images/icon/i_dnd.png">
-                  </el-button>
-                  <el-button size="mini" title="退房">
-                    <img src="../../../static/images/icon/i_checkout.png">
-                  </el-button>
-                  <el-button size="mini" title="风机(高)">
-                    <img src="../../../static/images/icon/i_speed3.png">
-                  </el-button>
-                  <el-button size="mini" title="门磁报警">
-                    <img src="../../../static/images/icon/i_doorwarning.png">
-                  </el-button>
-                  <el-button size="mini" title="请即清理">
-                    <img src="../../../static/images/icon/clear_room.png">
-                  </el-button>
-                </div>
-              </div>
-            </el-card>
-            <el-card shadow="hover" @click.native="openDialog">
-              <div class="room_item">
-                <span class="room_num">
-                  <span>1501</span>
-                  <img src="../../../static/images/icon/i_sos.png">
-                </span>
-                <div class="room_info">
-                  <el-button size="mini" title="客人卡">
-                    <img src="../../../static/images/icon/i_identity9.png" class="room_status">
-                  </el-button>
-                  <div class="temperature">
-                    <span class="room_temperature">26</span>
-                    <span class="room_unit">℃</span>
-                  </div>
-                </div>
-                <div class="room_icon">
-                  <el-button size="mini" title="请勿打扰">
-                    <img src="../../../static/images/icon/i_dnd.png">
-                  </el-button>
-                  <el-button size="mini" title="退房">
-                    <img src="../../../static/images/icon/i_checkout.png">
-                  </el-button>
-                  <el-button size="mini" title="风机(高)">
-                    <img src="../../../static/images/icon/i_speed3.png">
-                  </el-button>
-                  <el-button size="mini" title="门磁报警">
-                    <img src="../../../static/images/icon/i_doorwarning.png">
-                  </el-button>
-                  <el-button size="mini" title="请即清理">
+                  <el-button size="mini" title="请即清理" v-if="item1.status == 2">
                     <img src="../../../static/images/icon/clear_room.png">
                   </el-button>
                 </div>
               </div>
             </el-card>
           </el-collapse-item>
-          <el-collapse-item name="2">
-            <template slot="title">
-              <div
-                class="building"
-                style="display: inline-flex;flex-direction: row;align-items: center;"
-              >
-                <img src="../../../static/images/icon/buildingName.png" style="margin-right: 5px;">
-                <span>UP智谷B1栋</span>
-              </div>
-              <div
-                class="floor"
-                style="display: inline-flex;flex-direction: row;align-items: center;"
-              >
-                <img
-                  src="../../../static/images/icon/floor.png"
-                  style="margin-right: 5px;margin-left: 5px;"
-                >
-                <span>三楼</span>
-              </div>
-            </template>
-            <el-card shadow="hover" @click.native="openDialog">
-              <div class="room_item">
-                <span class="room_num">
-                  <span>1501</span>
-                  <img src="../../../static/images/icon/i_sos.png">
-                </span>
-                <div class="room_info">
-                  <el-button size="mini" title="客人卡">
-                    <img src="../../../static/images/icon/i_identity9.png" class="room_status">
-                  </el-button>
-                  <div class="temperature">
-                    <span class="room_temperature">26</span>
-                    <span class="room_unit">℃</span>
-                  </div>
-                </div>
-                <div class="room_icon">
-                  <el-button size="mini" title="请勿打扰">
-                    <img src="../../../static/images/icon/i_dnd.png">
-                  </el-button>
-                  <el-button size="mini" title="退房">
-                    <img src="../../../static/images/icon/i_checkout.png">
-                  </el-button>
-                  <el-button size="mini" title="风机(高)">
-                    <img src="../../../static/images/icon/i_speed3.png">
-                  </el-button>
-                  <el-button size="mini" title="门磁报警">
-                    <img src="../../../static/images/icon/i_doorwarning.png">
-                  </el-button>
-                  <el-button size="mini" title="请即清理">
-                    <img src="../../../static/images/icon/clear_room.png">
-                  </el-button>
-                </div>
-              </div>
-            </el-card>
-          </el-collapse-item>
+          <span class="notData" v-if="this.noRoomData == false">暂无数据</span>
         </el-collapse>
       </el-card>
     </el-row>
-    <!-- 编辑的弹框 -->
-    <el-dialog title="编辑楼层" :visible.sync="dialogFormVisible2" class="astrict">
-      <el-form :model="editData" :rules="myrules">
-        <el-form-item label="房间号码" prop="name" :label-width="formLabelWidth">
-          <el-input v-model="editData.roomNumber" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="描述" :label-width="formLabelWidth">
-          <el-input v-model="editData.remark" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="主板IP" :label-width="formLabelWidth">
-          <el-input v-model="editData.mainBoardIp" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="品牌" :label-width="formLabelWidth">
-          <el-select v-model="brandId" @change="selectOne" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in brandSelectData"
-              :key="index"
-              :label="item.brandName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="房间类型" :label-width="formLabelWidth">
-          <el-select v-model="editData.roomType" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in roomTypeSelectData"
-              :key="index"
-              :label="item.typeName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmEditD">确 定</el-button>
-      </div>
-    </el-dialog>
-
-    <!-- 新增的弹框 -->
-    <el-dialog title="新增客房" :visible.sync="dialogFormVisible" class="astrict">
-      <el-form :model="addform" :rules="myrules">
-        <el-form-item label="房间号" prop="roomNumber" :label-width="formLabelWidth">
-          <el-input v-model="addform.roomNumber" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="主板ip" prop="mainBoardIp" :label-width="formLabelWidth">
-          <el-input v-model="addform.mainBoardIp" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="描述" :label-width="formLabelWidth">
-          <el-input v-model="addform.remark" placeholder="请输入内容"></el-input>
-        </el-form-item>
-        <el-form-item label="品牌" :label-width="formLabelWidth">
-          <el-select v-model="brandId" @change="selectOne" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in brandSelectData"
-              :key="index"
-              :label="item.brandName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="门店" :label-width="formLabelWidth">
-          <el-select v-model="hotelId" @change="selectTwo" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in hotelSelectData"
-              :key="index"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="建筑" :label-width="formLabelWidth">
-          <el-select v-model="addform.buildingId" @change="selectThree" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in buildingSelectData"
-              :key="index"
-              :label="item.buildingName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="楼层" :label-width="formLabelWidth">
-          <el-select v-model="addform.floorId" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in floorSelectData"
-              :key="index"
-              :label="item.floorName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="客房类型" :label-width="formLabelWidth">
-          <el-select v-model="addform.roomType" clearable placeholder="请选择">
-            <el-option
-              v-for="(item,index) in roomTypeSelectData"
-              :key="index"
-              :label="item.typeName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="abrogateAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd">确 定</el-button>
-      </div>
-    </el-dialog>
 
     <!-- 客房管理 -->
     <el-dialog
       title="客房管理"
       :visible.sync="roomManagementDialogVisible"
-      width="62%"
+      width="63%"
       class="roomManagementDialog"
     >
       <div class="info">
@@ -535,11 +317,11 @@
         <div class="equipment">
           <div class="equipment_title">设备</div>
           <div class="equipment_info">
-            <div class="equipment_item">
+            <div class="equipment_item" v-for="(item, index) in getRoomDeviceArr.tc">
               <div class="item_title">空调</div>
               <div class="air_info" v-if="airControl == '开'">
                 <el-input-number
-                  v-model="currentTemp"
+                  v-model="item.settingValue"
                   controls-position="right"
                   @change="handleChangeTemp"
                   size="large"
@@ -548,7 +330,7 @@
                 <div>
                   <span>模式：</span>
                   <span>
-                    <el-radio-group v-model="mode" size="mini" @change="changeMode">
+                    <el-radio-group v-model="item.modelStatus" size="mini" @change="changeMode">
                       <el-radio-button label="制暖"></el-radio-button>
                       <el-radio-button label="制冷"></el-radio-button>
                       <el-radio-button label="送风"></el-radio-button>
@@ -559,7 +341,7 @@
                 <div>
                   <span>风速：</span>
                   <span>
-                    <el-radio-group v-model="speed" size="mini">
+                    <el-radio-group v-model="item.speedStatus" size="mini">
                       <el-radio-button label="关闭"></el-radio-button>
                       <el-radio-button label="低速"></el-radio-button>
                       <el-radio-button label="中速"></el-radio-button>
@@ -576,23 +358,30 @@
                 </el-radio-group>
               </div>
             </div>
-            <div class="equipment_item">
+            <!-- <div class="equipment_item" v-for="(item, index) in getRoomDeviceArr.fan">
               <div class="item_title">排气扇</div>
-              <img src="../../../static/images/dialog/fan_open.png" v-if="fan == '开'">
-              <img src="../../../static/images/dialog/fan_close.png" v-else>
+              <img src="../../../static/images/dialog/fan_close.png" v-if="item.deviceStatus == '关'">
+              <img src="../../../static/images/dialog/fan_open.png" v-else>
               <div>
-                <el-radio-group v-model="fan" size="small">
+                <el-radio-group v-model="item.deviceStatus" size="small">
                   <el-radio-button label="开"></el-radio-button>
                   <el-radio-button label="关"></el-radio-button>
                 </el-radio-group>
               </div>
-            </div>
-            <div class="equipment_item">
+            </div>-->
+            <div class="equipment_item" v-for="(item, index) in getRoomDeviceArr.light">
               <div class="item_title">灯光</div>
-              <img src="../../../static/images/dialog/lamp_open.png" v-if="lamp == '开'">
+              <img
+                src="../../../static/images/dialog/lamp_open.png"
+                v-if="item.deviceStatus == '开'"
+              >
               <img src="../../../static/images/dialog/lamp_close.png" v-else>
               <div>
-                <el-radio-group v-model="lamp" size="small">
+                <el-radio-group
+                  v-model="item.deviceStatus"
+                  size="small"
+                  @change="changeLight($event, item)"
+                >
                   <el-radio-button label="开"></el-radio-button>
                   <el-radio-button label="关"></el-radio-button>
                 </el-radio-group>
@@ -666,36 +455,34 @@
 
     <!-- 全部消息 -->
     <el-dialog title="消息" :visible.sync="openNoticeDialogVisible" width="30%">
-      <div>UP智谷B1栋2604: 请立即清理</div>
-      <div>UP智谷B1栋2604: 请立即清理</div>
-      <div>UP智谷B1栋2604: 请立即清理</div>
-      <div>UP智谷B1栋2604: 请立即清理</div>
-      <div>UP智谷B1栋2604: 请立即清理</div>
-      <div>UP智谷B1栋2604: 请立即清理</div>
-      <div>UP智谷B1栋2604: 请立即清理</div>
-      <div>UP智谷B1栋2604: 请立即清理</div>
-      <div>UP智谷B1栋2604: 请立即清理</div>
-      <div>UP智谷B1栋2604: 请立即清理</div>
-      <div>UP智谷B1栋2604: 请立即清理</div>
-      <div>UP智谷B1栋2604: 请立即清理</div>
-      <div>UP智谷B1栋2604: 请立即清理</div>
-      <div>UP智谷B1栋2604: 请立即清理</div>
+      <div style="max-height: 400px;overflow-y: scroll;">
+        <div
+          v-for="(item, index) in noticeList"
+        >{{item.buildingName + item.floorName + item.roomNumber}}:{{ item.status }}</div>
+      </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import { getRoomStatusList, addRoom, getFloorSelect, getHotelSelect, getBoomTypelSelect, getBuildingSelect, delRoom, getRights, getBrandSelect, editRoom, getHotelSeek } from '@/api'
-import { regionData, CodeToText } from 'element-china-area-data'
+import { getRoomStatusList, addRoom, getFloorSelect, getHotelSelect, getBoomTypelSelect, getBuildingSelect, delRoom, getRights, getBrandSelect, editRoom, getHotelSeek, getRoomInfo, getRoomlList } from '@/api'
+import { regionData, CodeToText } from 'element-china-area-data';
+import Axios from 'axios';
+
 export default {
   data () {
     return {
+      getRoomDeviceArr: {
+        fan: [],
+        light: [],
+        tc: [],
+      },
       currentTemp: 26,
       lamp: '关',
       fan: '关',
       airControl: '关',
       mode: '除湿',
       speed: '高速',
-      noticeList: ['中山南朗2620：请即清理', '中山南朗2620：请即清理', '中山南朗2620：请即清理', '中山南朗2620：请即清理', '中山南朗2620：请即清理', '中山南朗2620：请即清理', '中山南朗2620：请即清理', '中山南朗2620：请即清理', '中山南朗2620：请即清理', '中山南朗2620：请即清理'],
+      noticeList: [],
       selectRoomStatus: [{
         name: '待租',
         value: 0,
@@ -751,9 +538,9 @@ export default {
         buildingId: null,
         floorId: null,
         mainBoardIp: null,
+        hotelId: null,
+        brandId: null,
       },
-      hotelId: null,
-      brandId: null,
       // 新增
       addform: {
         floorId: null,  //楼层ID
@@ -793,12 +580,21 @@ export default {
         label: '无卡'
       }],
       RTSelectData: [{
-        value: '1',
+        value: 'QINGLI',
+        label: '请求清理'
+      }, {
+        value: 'WURAO',
         label: '请勿打扰'
       }, {
-        value: '0',
-        label: '请即清理'
-      },],
+        value: 'QINGLIING',
+        label: '正在清理'
+      }, {
+        value: 'JIANCHA',
+        label: '等待检查'
+      }, {
+        value: 'JIANCHAING',
+        label: '正在检查'
+      }],
       mcSelectData: [{
         value: '1',
         label: '正常'
@@ -860,7 +656,7 @@ export default {
         children: 'children',
         label: 'title'
       },
-
+      noRoomData: false,
       roomManagementDialogVisible: false,
       openNoticeDialogVisible: false,
     }
@@ -875,10 +671,62 @@ export default {
     this.initList()
   },
   methods: {
+    // 改变灯光状态
+    changeLight (oper, val) {
+      console.log(oper, val)
+      let onoff = false
+      let lightArr = JSON.parse(JSON.stringify(this.getRoomDeviceArr.light))
+      lightArr.forEach(item => {
+        if (item.lightId == val.lightId) {
+          item.status = item.status == '0' ? '1' : '0'
+          onoff = true
+        }
+      })
+      if (onoff == true) {
+        let state = this.lightJsonData(lightArr)
+        console.log(state)
+        let lightJson = Object.assign({ id: val.lightId }, state)
+        console.log(lightJson)
+        Axios({
+          method: 'post',
+          url: "/mqtt/mqttb",
+          data: {
+            cmd: "light",
+            id: val.mainboardId,
+            index: 1,
+            arg: state
+          },
+          headers: {
+            'Content-Type': 'application/json;',
+          },
+        }).then(res => {
+          console.log(res)
+          this.$message({
+            type: 'info',
+            message: res.data
+          })
+        })
+      }
+    },
+
+    // 灯光 json 格式
+    lightJsonData (arr) {
+      let on = [];
+      let off = []
+      arr.forEach(item => {
+        if (item.status == '0') {
+          off.push(item.lightId)
+        } else {
+          on.push(item.lightId)
+        }
+      })
+      return { on, off }
+    },
+
+
     handleChange (val) {
       console.log(val);
     },
-
     changeMode () {
       console.log(this.mode)
     },
@@ -895,16 +743,27 @@ export default {
 
     // 初始化表格数据
     initList () {
-      getRoomStatusList().then(res => {
-        console.log(res)
+      this.noRoomData = false
+      getRoomStatusList(this.seekData).then(res => {
+        let allId = []
         if (res.status === 200) {
+
+          if (res.data.rows != false) {
+            console.log(res.data.rows)
+            res.data.rows.forEach(item => {
+              allId.push(item.id)
+            })
+            this.activeNames = allId
+            this.noRoomData = true
+          }
+          this.noticeList = res.data.roomMsg
           this.tableData = res.data.rows
         }
       })
     },
 
     /* 初始化下拉框 */
-    // 获取品牌下拉框
+    // 获取品牌下拉框 -- 1
     initialize () {
       getBrandSelect().then((res) => {
         if (res.status === 200) {
@@ -913,11 +772,9 @@ export default {
         }
       })
     },
-    // 获取门店下拉框
+    // 获取门店下拉框 -- 2
     selectOne (id) {
-      // console.log(id)
       getHotelSelect(id).then((res) => {
-        // console.log(res)
         if (res.data) {
           this.hotelSelectData = res.data
         } else {
@@ -935,7 +792,7 @@ export default {
         }
       })
     },
-    // 获取建筑下拉框
+    // 获取建筑下拉框  -- 3
     selectTwo (id) {
       // console.log(id)
       getBuildingSelect(id).then((res) => {
@@ -950,7 +807,7 @@ export default {
         }
       })
     },
-    // 获取楼层下拉框
+    // 获取楼层下拉框 -- 4
     selectThree (id) {
       // console.log(id)
       getFloorSelect(id).then((res) => {
@@ -1062,25 +919,12 @@ export default {
     },
     // 查询按钮
     handleSearch () {
-      console.log(this.seekData)
-      if (this.seekData) {
-        getRoomlList(this.seekData).then((res) => {
-          console.log(res)
-          if (res.status === 200) {
-            this.tableData = res.data.rows
-          }
-        })
-      } else {
-        this.initList()
-      }
+      this.initList()
     },
     // 重置按钮
     reset () {
-      this.seekData.buildingId = null,
-        this.seekData.floorId = null,
-        this.seekData.mainBoardIp = null,
-        this.seekData.brandSelectData = null,
-        this.seekData.hotelSelectData = null,
+      this.seekData.brandId = this.seekData.hotelId = this.seekData.buildingId = this.seekData.floorId = this.seekData.typeName = this.seekData.mainBoardIp = this.seekData.rent = this.seekData.identity = this.seekData.doorWarning = this.seekData.status = this.seekData.sos = this.seekData.checkout = this.seekData.temp = null
+      this.brandSelectData = this.hotelSelectData = this.buildingSelectData = this.floorSelectData = this.roomTypeSelectData = null,
         this.initList()
     },
     list2tree (list, idKey = "id", parentKey = "pId") {
@@ -1109,9 +953,73 @@ export default {
     },
 
 
-    openDialog () {
+    openDialog (val) {
       this.roomManagementDialogVisible = true
+      this.getRoomDeviceInfo(val.mainboardId)
     },
+
+    // 获取房间设备信息
+    getRoomDeviceInfo (val) {
+      getRoomInfo(val).then(res => {
+        if (res.data.fan != false) {
+          res.data.fan.forEach(item => {
+            if (item.status == '0') {
+              item.deviceStatus = '关'
+            } else {
+              item.deviceStatus = '开'
+            }
+          })
+        }
+        if (res.data.light != false) {
+          res.data.light.forEach(item => {
+            if (item.status == '0') {
+              item.deviceStatus = '关'
+            } else {
+              item.deviceStatus = '开'
+            }
+          })
+        }
+        if (res.data.tc != false) {
+          res.data.tc.forEach(item => {
+            switch (item.realModel) {
+              case '0':
+                item.modelStatus = '制暖';
+                break;
+              case '1':
+                item.modelStatus = '制冷';
+                break;
+              case '2':
+                item.modelStatus = '送风';
+                break;
+              case '3':
+                item.modelStatus = '除湿';
+                break;
+              default:
+                item.modelStatus = '制暖';
+            }
+            switch (item.realSpeed) {
+              case '0':
+                item.speedStatus = '关闭';
+                break;
+              case '1':
+                item.speedStatus = '低速';
+                break;
+              case '2':
+                item.speedStatus = '中速';
+                break;
+              case '3':
+                item.speedStatus = '高速';
+                break;
+              default:
+                item.speedStatus = '关闭';
+            }
+          })
+        }
+        console.log(res.data)
+        this.lightJsonData(res.data.light)
+        this.getRoomDeviceArr = res.data
+      })
+    }
   }
 }
 </script>
@@ -1133,7 +1041,7 @@ export default {
         color: #000;
         display: inline-block;
         white-space: nowrap;
-        animation: 30s wordsLoop linear infinite normal;
+        animation: 300s wordsLoop linear infinite normal;
         span {
           margin-right: 20px;
         }
@@ -1243,6 +1151,14 @@ export default {
       }
     }
   }
+  .notData {
+    display: inline-block;
+    width: 100%;
+    height: 120px;
+    text-align: center;
+    line-height: 120px;
+    color: #606266;
+  }
   .astrict {
     .el-select {
       width: 100%;
@@ -1313,6 +1229,7 @@ export default {
         .equipment_item {
           text-align: center;
           width: 33.33%;
+          min-width: 166px;
           .item_title {
             margin-bottom: 5px;
             font-size: 20px;
@@ -1397,7 +1314,7 @@ export default {
 </style>
 
 <style type="text/css">
-.my-box .el-card__body {
+.roomPage .el-card__body {
   padding: 5px;
 }
 .room_icon .el-button--mini,

@@ -26,7 +26,7 @@
           <el-col :span="19">
             <el-button @click="addBtn" v-if="showadd!=-1">新增</el-button>
             <el-button @click="batchesDelete" v-if="showdelete!=-1">批量删除</el-button>
-            <div style="color: #fff;">.</div>
+            <div style="color: #fff; display: inline-block;">.</div>
           </el-col>
           <el-col :span="5" class="reset-button">
             <el-button type="primary" @click="handleSearch">查询</el-button>
@@ -146,9 +146,23 @@
   </div>
 </template>
 <script>
-import { getBrandList, addBrand, delBrand, getRights, getBrandSelect, getBrandSeek, editBrand } from '@/api'
+import { getBrandList, addBrand, delBrand, getRights, getBrandSelect, getBrandSeek, editBrand, nameVerify } from '@/api'
 export default {
   data () {
+    /* 品牌名是否重复校验 */
+    let Verify = (rule, value, callback) => {
+      if (value === null) {
+        callback(new Error('不能为空'))
+      } else {
+        nameVerify('brand', { brandName: value, id: this.editData.id }).then(res => {
+          if (res.data) {
+            callback()
+          } else {
+            callback(new Error('你输入的已存在，请重新输入'))
+          }
+        })
+      }
+    }
     return {
       multipleSelection: [],
       loading: false,
@@ -180,8 +194,8 @@ export default {
       },
       myrules: {
         brandName: [
-          { required: true, message: '请输入内容', trigger: 'blur' }
-        ]
+          { required: true, validator: Verify, trigger: 'blur' }
+        ],
       },
       userJurisdiction: null,
       defaultProps: {
