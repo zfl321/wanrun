@@ -524,6 +524,10 @@ export default {
     }
   },
   mounted() {
+<<<<<<< HEAD
+=======
+    this.foldData = false
+>>>>>>> b6a8f59dfd136f145992e82829902af7ce76d814
     this.getList()
     this.initialize()
   }

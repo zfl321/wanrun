@@ -110,7 +110,12 @@ export const getDictList = (obj) => axios.get('dict', { params: obj })
 export const getRoomStatusList = (obj) => axios.get('roomStatus', { params: obj })
 
 // 获取房间设备信息
+<<<<<<< HEAD
 export const getRoomInfo = (id) => axios.get('eq/getInfo/' + 'a50540c0-5b4b-11d9-8e62-3999def180b4')
+=======
+export const  getRoomInfo = (id) => axios.get('eq/getInfo/' + 'a50540c0-5b4b-11d9-8e62-3999def180b4')
+// export const  getRoomInfo = (id) => axios.get('eq/getInfo/' + id)
+>>>>>>> b6a8f59dfd136f145992e82829902af7ce76d814
 
 // 客房事件列表
 export const getRoomStatused = (obj) => axios.get('roomStatused', { params: obj })
