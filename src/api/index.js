@@ -106,6 +106,14 @@ export const getLoglList = (obj) => axios.get('log', { params: obj })
 export const getDictList = (obj) => axios.get('dict', { params: obj })
 // 客房监控查询
 export const getRoomStatusList = (obj) => axios.get('roomStatus', { params: obj })
+
+// 获取房间设备信息
+export const  getRoomInfo = (id) => axios.get('eq/getInfo/' + 'a50540c0-5b4b-11d9-8e62-3999def180b4')
+// export const  getRoomInfo = (id) => axios.get('eq/getInfo/' + id)
+
+// 客房事件列表
+export const getRoomStatused = (obj) => axios.get('roomStatused', { params: obj })
+
 // 故障信息查询
 export const getDeviceFaultList = (obj) => axios.get('deviceFault', { params: obj })
 // 故障监控查询

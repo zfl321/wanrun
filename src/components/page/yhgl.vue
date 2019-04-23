@@ -101,7 +101,7 @@
             <el-button @click="addBtn" v-if="showadd!=-1">新增</el-button>
             <el-button @click="batchesDelete" v-if="showdelete!=-1">批量删除</el-button>
             <el-button @click="resetPassword" v-if="showreset!=-1">重置密码</el-button>
-            <div style="color: #fff;">.</div>
+            <div style="color: #fff; display: inline-block;">.</div>
           </el-col>
           <el-col :span="5" class="reset-button">
             <el-button type="primary" @click="handleSearch">查询</el-button>
@@ -128,7 +128,7 @@
             ref="multipleTable"
             :data="tableData"
             tooltip-effect="dark"
-            height="54vh"
+            :height="dv"
             style="width: 100%"
             @selection-change="handleSelectionChange"
           >
@@ -747,6 +747,10 @@ export default {
     showreset: function () {
       return this.userJurisdiction.indexOf("user:reset")
     },
+    dv: function windowHeight () {
+      var de = document.documentElement;
+      return (self.innerHeight || (de && de.offsetHeight) || document.body.offsetHeight) - 306;
+    }
   },
   // 注册表格组件
   components: {

@@ -54,7 +54,7 @@
           <el-col :span="19">
             <el-button @click="addBtn" v-if="showadd!=-1">新增</el-button>
             <el-button @click="batchesDelete" v-if="showdelete!=-1">批量删除</el-button>
-            <div style="color: #fff;">.</div>
+            <div style="color: #fff; display: inline-block;">.</div>
           </el-col>
           <el-col :span="5" class="reset-button">
             <el-button type="primary" @click="handleSearch" :loading="loading">查询</el-button>
