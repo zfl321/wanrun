@@ -99,7 +99,7 @@
                     <el-select v-model="seekData.type" clearable placeholder="请选择">
                       <el-option
                         v-for="item in deviceFaultSelectData"
-                        :key="item.value"
+                        :key="index"
                         :label="item.valuee"
                         :value="item.keyy"
                       ></el-option>
@@ -144,7 +144,7 @@
             style="width: 100%"
             @selection-change="handleSelectionChange"
           >
-            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column type="selection" disabled width="55"></el-table-column>
             <el-table-column prop="brandName" label="品牌" width="120"></el-table-column>
             <el-table-column prop="hotelName" label="门店" width="120"></el-table-column>
             <el-table-column prop="buildingName" label="建筑" width="120"></el-table-column>

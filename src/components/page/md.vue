@@ -42,7 +42,7 @@
           </el-col>
           <el-col :span="5" class="reset-button">
             <el-button type="primary" @click="handleSearch">查询</el-button>
-            <el-button>重置</el-button>
+            <el-button @click="reset">重置</el-button>
             <el-button plain class="my-icont" @click="fold">
               <div v-if="foldData">
                 收起
@@ -203,10 +203,27 @@ export default {
   data () {
     /* 门店名是否重复校验 */
     let Verify = (rule, value, callback) => {
+      console.log(rule, value, callback)
       if (value == null) {
         callback(new Error('不能为空'))
       } else {
         nameVerify('hotel', { name: value, id: this.editData.id }).then(res => {
+          if (res.data) {
+            callback()
+          } else {
+            callback(new Error('你输入的已存在，请重新输入'))
+          }
+        })
+      }
+    }
+
+    // 门店编号重复校验
+    let VerifyCode = (rule, value, callback) => {
+      console.log(rule, value, callback)
+      if (value == null) {
+        callback(new Error('不能为空'))
+      } else {
+        nameVerify('hotel', { hotelCode: value, id: this.editData.id }).then(res => {
           if (res.data) {
             callback()
           } else {
@@ -262,7 +279,7 @@ export default {
           { required: true, validator: Verify, trigger: 'blur' }
         ],
         hotelCode: [
-          { required: true, message: '请输入内容', trigger: 'blur' }
+          { required: true, validator: VerifyCode, trigger: 'blur' }
         ],
         brandId: [
           { required: true, message: '请选择', trigger: 'change' }
@@ -517,8 +534,12 @@ export default {
     handleSizeChange (psize) {
       this.seekData.pageSize = psize;
       this.initList(this.seekData)
+    },
+    //重置
+    reset () {
+      this.seekData.brandId = null
+      this.seekData.name = null
     }
-
 
   }
 }

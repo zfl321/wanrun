@@ -509,7 +509,7 @@
   </div>
 </template>
 <script>
-import { getUserList, addUser, editpassword, nameVerify, getRoleSelect, getHotelSelect, getBuildingSelect, delUser, getRights, getBrandSelect, editUser, getHotelSeek } from '@/api'
+import { getUserList, addUser, editpassword, nameVerify, usernameVerify, getRoleSelect, getHotelSelect, getBuildingSelect, delUser, getRights, getBrandSelect, editUser, getHotelSeek } from '@/api'
 import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   data () {
@@ -569,7 +569,7 @@ export default {
       } else {
         let nameReg = /^[a-zA-Z0-9_-]{4,16}$/
         if (nameReg.test(value)) {
-          nameVerify('user', { username: value }).then(res => {
+          usernameVerify('user', value).then(res => {
             if (res.data) {
               callback()
             } else {

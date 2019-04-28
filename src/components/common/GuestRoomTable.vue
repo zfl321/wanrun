@@ -7,8 +7,10 @@
         prop="rent"
         label="出租">
         <template slot-scope="scope">
-          <i class="el-icon-check" v-if='scope.row.rent'></i>
-          <i class="el-icon-close" v-else></i>
+          <span v-if='scope.row.rent == "1"'>是</span>
+          <span v-else>否</span>
+          <!-- <i class="el-icon-check" v-if='scope.row.rent'></i>
+          <i class="el-icon-close" v-else></i> -->
         </template>
       </el-table-column>
       <el-table-column
@@ -18,19 +20,23 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="warning"
+        prop="doorWarning"
         label="门磁报警">
         <template slot-scope="scope">
-          <i class="el-icon-check" v-if='scope.row.doorWarning'></i>
-          <i class="el-icon-close" v-else></i>
+          <span v-if='scope.row.doorWarning == "1"'>是</span>
+          <span v-else>否</span>
+          <!-- <i class="el-icon-check" v-if='scope.row.doorWarning'></i>
+          <i class="el-icon-close" v-else></i> -->
         </template>
       </el-table-column>
       <el-table-column
         prop="fault"
         label="故障">
         <template slot-scope="scope">
-          <i class="el-icon-check" v-if='scope.row.fault'></i>
-          <i class="el-icon-close" v-else></i>
+          <span v-if='scope.row.fault == "1"'>是</span>
+          <span v-else>否</span>
+          <!-- <i class="el-icon-check" v-if='scope.row.fault'></i>
+          <i class="el-icon-close" v-else></i> -->
         </template>
       </el-table-column>
       <el-table-column
@@ -88,34 +94,7 @@
     },
     data() {
       return {
-        tableData: [{
-          date: '2016-05-02',
-          rent: 1,
-          face: '无卡',
-          warning: 1,
-          fault: 1,
-          status: '无标志',
-          oper: '插拔卡',
-          address: '上海市普陀区金沙江路 1518 弄',
-        }, {
-          date: '2016-05-04',
-          rent: 0,
-          face: '管理员卡',
-          warning: 1,
-          fault: 0,
-          status: '请勿打扰',
-          oper: '插拔卡',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          rent: 1,
-          face: '客人卡',
-          warning: 0,
-          fault: 1,
-          status: '请即清理',
-          oper: '插拔卡',
-          address: '上海市普陀区金沙江路 1518 弄',
-        }]
+        tableData: []
       }
     },
     methods: {

@@ -3,7 +3,62 @@
   <el-card shadow="always">
     <div class="box">
       <div class="modeType">季节模式</div>
-      <el-row :gutter="10" v-for="(item,index) in inputVel.hang" :key="index">
+      <el-form label-width="70px">
+        <el-row :gutter="10">
+          <el-col :span="8">
+            <el-form-item label="品牌">
+              <el-select
+                v-model="seekData.brandId"
+                @change="selectOne"
+                clearable
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="(item,index) in brandSelectData"
+                  :key="index"
+                  :label="item.brandName"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <!-- <div class="grid-content">
+              <span>{{item1.name}}:</span>
+              <el-select v-model="item1.value" placeholder="请选择">
+                <el-option
+                  :label="item2"
+                  :value="index2"
+                  v-for="(item2,index2) in item1.message"
+                  :key="index2"
+                ></el-option>
+              </el-select>
+            </div> -->
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="门店">
+              <el-select v-model="seekData.hotelId" clearable placeholder="请选择">
+                <el-option
+                  v-for="(item,index) in hotelSelectData"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="10">
+          <el-col :span="16" style="display: inline-flex;flex-direction: row;justify-content: space-around;width: 66.66%;">
+            <el-radio-group v-model="seekData.radio">
+              <el-radio :label="1" border>夏季模式</el-radio>
+              <el-radio :label="0" border>冬季模式</el-radio>
+            </el-radio-group>
+          </el-col>
+          <el-col :span="8" style="text-align: center;">
+            <el-button type="primary" size="small" @click="submit">确认</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+      <!-- <el-row :gutter="10" v-for="(item,index) in inputVel.hang" :key="index">
         <el-col :span="8" v-for="(item1,index1) in item.lie" :key="index1">
           <div class="grid-content">
             <span>{{item1.name}}:</span>
@@ -17,8 +72,8 @@
             </el-select>
           </div>
         </el-col>
-      </el-row>
-      <div class="sb_btns">
+      </el-row> -->
+      <!-- <div class="sb_btns">
         <div class="radio">
           <el-radio v-model="radio" label="1" border>夏季模式</el-radio>
           <el-radio v-model="radio" label="2" border>冬季模式</el-radio>
@@ -26,7 +81,7 @@
         <div class="confirm_btn">
           <el-button type="primary" size="small" @click="submit">确认</el-button>
         </div>
-      </div>
+      </div> -->
 
       <el-card class="sbTable" v-if="show">
         <sbTable></sbTable>
@@ -36,9 +91,17 @@
 </template>
 <script>
   import sbTable from '@/components/common/sbTable.vue';
+  import { setSeasonal, getBrandSelect, getHotelSelect,  } from '@/api';
   export default {
     data () {
       return {
+        seekData: {
+          hotelId: null,
+          brandId: null,
+          radio: 1,
+        },
+        brandSelectData: [],
+        hotelSelectData: [],
         show: false,
         radio: "1",
         inputVel: {
@@ -82,8 +145,46 @@
     },
     methods: {
       submit(){
-        this.show = this.show ? false : true;
-      }
+        console.log(this.seekData)
+        if(this.seekData.brandId == null || this.seekData.hotelId == null){
+          this.$message({
+            type: 'info',
+            message: '请选择品牌或门店'
+          })
+        }else {
+          // setSeasonal(this.seekData).then(res => {
+          //   console.log(res)
+          // })
+          // this.show = this.show ? false : true;
+        }
+      },
+
+      // 获取品牌
+      initialize () {
+        getBrandSelect().then((res) => {
+          if (res.status === 200) {
+            this.brandSelectData = res.data
+            // console.log(res)
+          }
+        })
+      },
+
+      // 获取门店下拉框 -- 2
+      selectOne (id) {
+        getHotelSelect(id).then((res) => {
+          if (res.data) {
+            this.hotelSelectData = res.data
+          } else {
+            this.$message({
+              message: '该品牌下没有门店数据',
+              type: 'warning'
+            });
+          }
+        })
+      },
+    },
+    created() {
+      this.initialize()
     },
     components: {
       sbTable

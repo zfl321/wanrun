@@ -1,14 +1,13 @@
 // 这个文件用来封装接口，发送请求
 import axios from 'axios'
 import QS from 'qs'
-import { MessageBox } from 'element-ui';
 // 请求携带cookie
 axios.defaults.withCredentials = true
 // console.log(axios.defaults)
 
 // axios.defaults.baseURL = 'http://172.16.109.204:9527'
-// axios.defaults.baseURL = 'http://47.92.64.56:9527'
-axios.defaults.baseURL = 'http://192.168.1.57:9527'
+axios.defaults.baseURL = 'http://47.92.64.56:9527'
+// axios.defaults.baseURL = 'http://192.168.1.59:9527'
 // axios.defaults.baseURL = 'http://t2fkp3.natappfree.cc'
 // 登陆函数
 export const login = function (obj) {
@@ -18,6 +17,8 @@ export const login = function (obj) {
 export const getUserJurisdiction = obj => axios.get('menu/' + obj)
 // 名称校验
 export const nameVerify = (name, obj) => axios.get(`${name}/check`, { params: obj })
+// 用户名称校验
+export const usernameVerify = (name, obj) => axios.get(`${name}/check/` + obj)
 
 // 用户数据列表获取
 export const getUserList = obj => axios.get('user', { params: obj })
@@ -110,12 +111,8 @@ export const getDictList = (obj) => axios.get('dict', { params: obj })
 export const getRoomStatusList = (obj) => axios.get('roomStatus', { params: obj })
 
 // 获取房间设备信息
-<<<<<<< HEAD
 export const getRoomInfo = (id) => axios.get('eq/getInfo/' + 'a50540c0-5b4b-11d9-8e62-3999def180b4')
-=======
-export const  getRoomInfo = (id) => axios.get('eq/getInfo/' + 'a50540c0-5b4b-11d9-8e62-3999def180b4')
 // export const  getRoomInfo = (id) => axios.get('eq/getInfo/' + id)
->>>>>>> b6a8f59dfd136f145992e82829902af7ce76d814
 
 // 客房事件列表
 export const getRoomStatused = (obj) => axios.get('roomStatused', { params: obj })
@@ -126,7 +123,8 @@ export const getDeviceFaultList = (obj) => axios.get('deviceFault', { params: ob
 export const getDeviceFaultAlarmList = (obj) => axios.get('deviceFaultAlarm', { params: obj })
 // 菜单管理查询
 export const getMenuList = (obj) => axios.get('menu', { params: obj })
-
+// 设备模式
+export const setSeasonal = (obj) => axios.get('roomStatus/seasonal', { params: obj })
 
 
 
@@ -205,6 +203,12 @@ export const editDict = obj => axios.put('dict', obj)
 export const editMenu = obj => axios.put('menu', obj)
 
 
+// 客房批量导入
+export const roomImport = obj => axios.post('room/import', obj)
+
+// 客房模板导出
+export const roomTemplate = () => axios.post('room/template')
+
 
 
 // 使用请求拦截, 作用将所有的请求拦截下来，执行自己的逻辑。当前的需求是给所有的请求添加请求头。通过config请求对象的headers属性设置
@@ -216,7 +220,7 @@ axios.interceptors.request.use(function (config) {
     config.headers.Authentication = token
   }
   // console.log(config.url)
-  if (config.url != "/mqtt/mqttb") {
+  if (config.url != "/mqtt/mqttb" && config.url != '/room/import') {
     // 将请求类型改为普通的表单类型
     config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     if (config.method === 'post' || 'put') {

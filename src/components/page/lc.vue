@@ -156,15 +156,26 @@
     <!-- 新增的弹框 -->
     <el-dialog title="新增建筑" :visible.sync="dialogFormVisible" class="astrict">
       <el-form :model="addform" :ref="addform" :rules="myrules">
-        <el-form-item label="楼层" prop="floorName" :label-width="formLabelWidth">
-          <el-input-number
-            style="width: 100%;"
-            v-model="addform.floorName"
-            :min="1"
-            controls-position="right"
-            label="描述文字"
-            placeholder="输入的数字代表要添加多少楼层"
-          ></el-input-number>
+        <el-form-item label="楼层" :label-width="formLabelWidth">
+          <div style="display: inline-flex;flex-direction: row;justify-content: space-between;width: 100%;">
+            <el-input-number
+              style="width: 100%;"
+              v-model="addform.beg"
+              :min="1"
+              controls-position="right"
+              label="描述文字"
+              placeholder="输入的数字代表要添加多少楼层"
+            ></el-input-number>
+            <span style="margin: 0 20px;">至</span>
+            <el-input-number
+              style="width: 100%;"
+              v-model="addform.end"
+              :min="1"
+              controls-position="right"
+              label="描述文字"
+              placeholder="输入的数字代表要添加多少楼层"
+            ></el-input-number>
+          </div>
         </el-form-item>
         <el-form-item label="品牌" prop="brandId" :label-width="formLabelWidth">
           <el-select v-model="addform.brandId" @change="selectOne" placeholder="请选择">
@@ -236,7 +247,8 @@ export default {
       addform: {
         hotelId: null,
         brandId: null,
-        floorName: null,  //楼层名称
+        beg: null,
+        end: null,
         description: null,   //建筑描述
         buildingId: null,   //建筑ID
       },
@@ -248,7 +260,9 @@ export default {
       selectedOptions: [],
       // 编辑
       editData: {
-        floorName: null,  //楼层名称
+        // floorName: null,  //楼层名称
+        beg: null,
+        end: null,
         description: null,   //描述
         id: null,   //楼层ID
       },
@@ -370,6 +384,13 @@ export default {
       // addform.province = selectedOptions
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          if(this.addform.beg > this.addform.end){
+            this.$message({
+              type: 'error',
+              message: '请正确输入起止楼层'
+            })
+            return
+          }
           this.loading = true
           delete this.addform.brandId
           delete this.addform.hotelId

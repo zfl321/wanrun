@@ -13,6 +13,7 @@
             type="password"
             placeholder="password"
             v-model="ruleForm.password"
+            show-password
             @keyup.enter.native="submitForm('ruleForm')"
           >
             <el-button slot="prepend" icon="el-icon-lx-lock"></el-button>
@@ -30,7 +31,22 @@
 <script>
 import { login } from '@/api'
 export default {
-  data: function () {
+  data() {
+    /* 自定义校验规则 */
+    /* 密码自定义校验规则 */
+    let Password = (rule, value, callback) => {
+      // console.log(value)
+      if (value == '') {
+        callback(new Error('密码不能为空'))
+      } else {
+        let passwordReg = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,10}$/
+        if (passwordReg.test(value)) {
+          callback()
+        } else {
+          callback(new Error('包含大小写和数字 6-10位 无特殊符号'))
+        }
+      }
+    }
     return {
       loading: false,
       ruleForm: {
@@ -42,6 +58,7 @@ export default {
           { required: true, message: '请输入用户名', trigger: 'blur' }
         ],
         password: [
+          // { required: true, validator: Password, trigger: ['blur', 'change'] }
           { required: true, message: '请输入密码', trigger: 'blur' }
         ]
       }
@@ -77,7 +94,7 @@ export default {
               console.log(err)
             })
         } else {
-          alert('请正确输入信息后再提交')
+          // alert('请正确输入信息后再提交')
           return false
         }
       })

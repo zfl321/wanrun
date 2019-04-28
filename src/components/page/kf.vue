@@ -101,6 +101,16 @@
           <el-col :span="19">
             <el-button @click="addBtn" v-if="showadd!=-1">新增</el-button>
             <el-button @click="batchesDelete" v-if="showdelete!=-1">批量删除</el-button>
+            <!-- <el-button @click="exportExcel">下载模板</el-button> -->
+            <el-button @click="uploadExcel">下载模板</el-button>
+            <!-- <label class="control-label file">
+              <input type="file" @change="importf(this)" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
+              导入excel
+            </label> -->
+            <label class="control-label file">
+              <input type="file" class="upload" @change="importExcel" ref="inputer" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
+              导入excel
+            </label>
             <div style="color: #fff; display: inline-block;">.</div>
           </el-col>
           <el-col :span="5" class="reset-button">
@@ -120,6 +130,12 @@
         </el-row>
       </el-card>
     </el-row>
+
+    <!-- 导出模板 -->
+    <el-row style="display: none;">
+      <ExcelTemplate id="out-table"></ExcelTemplate>
+    </el-row>
+
     <!-- 内容区域 -->
     <el-row>
       <el-card shadow="always">
@@ -130,8 +146,7 @@
             tooltip-effect="dark"
             :height="dv"
             style="width: 100%"
-            @selection-change="handleSelectionChange"
-          >
+            @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="brandName" label="品牌" width="120"></el-table-column>
             <el-table-column prop="hotelName" label="门店" width="120"></el-table-column>
@@ -287,11 +302,17 @@
   </div>
 </template>
 <script>
-import { getRoomlList, addRoom, getFloorSelect, getHotelSelect, getBoomTypelSelect, getBuildingSelect, delRoom, getRights, getBrandSelect, editRoom, getHotelSeek } from '@/api'
-import { regionData, CodeToText } from 'element-china-area-data'
+import { getRoomlList, addRoom, getFloorSelect, getHotelSelect, getBoomTypelSelect, getBuildingSelect, delRoom, getRights, getBrandSelect, editRoom, getHotelSeek, roomImport, roomTemplate } from '@/api'
+import ExcelTemplate from '@/components/common/ExcelTemplate.vue'
+import { regionData, CodeToText } from 'element-china-area-data';
+import Axios from 'axios';
+import XLSX from 'xlsx';
+import FileSaver from 'file-saver';
+
 export default {
   data () {
     return {
+      excelData: [],
       multipleSelection: [],
       loading: false,
       // 建筑列表数据
@@ -387,6 +408,7 @@ export default {
   },
   // 注册表格组件
   components: {
+    ExcelTemplate
   },
   created () {
     this.userJurisdiction = JSON.parse(localStorage.getItem('userJurisdiction'));
@@ -394,7 +416,138 @@ export default {
     this.initList()
   },
   methods: {
+    // 下载模板
+    uploadExcel(){
+      Axios.post(`${Axios.defaults.baseURL}/room/template`, {}, {responseType: 'arraybuffer'}).then(res => {
+        console.log(res)
+        var blob = new Blob([res.data], {type: 'application/vnd.ms-excel'});
+        var downloadElement = document.createElement('a');
+        var href = window.URL.createObjectURL(blob); // 创建下载的链接
+        downloadElement.href = href;
+        downloadElement.download = '上传模板' +'.xlsx'; // 下载后文件名
+        document.body.appendChild(downloadElement);
+        downloadElement.click(); // 点击下载
+        document.body.removeChild(downloadElement); // 下载完成移除元素
+        window.URL.revokeObjectURL(href); // 释放掉blob对象
+      })
+    },
 
+    // 导出 excel 
+    exportExcel () {
+      /* generate workbook object from table */
+      var wb = XLSX.utils.table_to_book(document.querySelector('#out-table'))
+      /* get binary string as output */
+      var wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' })
+      try {
+        FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), '导入模板.xlsx')
+      } catch (e) { if (typeof console !== 'undefined') console.log(e, wbout) }
+      return wbout
+    },
+
+    // 导入excel
+    importExcel(event) {
+      let inputDOM = this.$refs.inputer;
+      // 通过DOM取文件数据
+      // this.fil = inputDOM.files;
+      console.log(inputDOM.files[0])
+      let formData = new FormData();
+      formData.append('file', inputDOM.files[0]);
+      Axios({
+        method: 'post',
+        url: '/room/import',
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data;',
+        },
+      }).then(res => {
+        console.log(res)
+        this.initList()
+      })
+      // Axios({
+      //   method: 'post',
+      //   url: "/room/import",
+      //   data: formData,
+      //   headers: {
+      //     'Content-Type": "multipart/form-data'
+      //   },
+      // }).then(res => {
+      //   console.log(res)
+      // })
+      // this.$axios({
+      //   method: "post",
+      //   url: "/room/import",
+      //   data: formData,
+      //   headers: {
+      //     "Content-Type": "multipart/form-data"
+      //   }
+      // }).then(res => {
+      //   console.log(res)
+      // });
+    },
+
+    importf(obj) {
+      let _this = this;  
+      this.file = event.currentTarget.files[0];  
+      var rABS = false; //是否将文件读取为二进制字符串  
+      var file = this.file; 
+
+      FileReader.prototype.readAsBinaryString = function(f) {  
+        var binary = "";  
+        var rABS = false; //是否将文件读取为二进制字符串  
+        var pt = this;  
+        var workbook; //读取完成的数据  
+        // var excelData;  
+        var reader = new FileReader(); 
+        reader.onprogress = function(e) { 
+          let total = file.size;
+          _this.progress = (e.loaded/total)*100;
+          console.log( _this.progress);
+        };   
+        reader.onload = function(e) {
+          try {
+            var bytes = new Uint8Array(reader.result);  
+            var length = bytes.byteLength;  
+            for(var i = 0; i < length; i++) {  
+              binary += String.fromCharCode(bytes[i]);  
+            }  
+            if(rABS) {  
+              workbook = XLSX.read(btoa(fixdata(binary)), { //手动转化  
+                type: 'base64'  
+              });  
+            }else {  
+              workbook = XLSX.read(binary, {  
+                type: 'binary'  
+              });  
+            } 
+            // excelData = []; 
+          } catch(e) {
+            console.log('文件类型不正确');
+            return;
+          }
+          var fromTo = '';
+          for (var sheet in workbook.Sheets) {
+            if (workbook.Sheets.hasOwnProperty(sheet)) {
+              fromTo = workbook.Sheets[sheet]['!ref'];
+              _this.excelData = _this.excelData.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet]));
+            }
+          }
+          console.log(_this.excelData);
+          roomImport(_this.excelData).then(res => {
+            console.log('批量', res)
+          })
+        };
+
+        reader.readAsArrayBuffer(f);  
+
+      } 
+ 
+      var reader = new FileReader();
+      if(rABS) {  
+        reader.readAsArrayBuffer(file);  
+      }else {  
+        reader.readAsBinaryString(file);  
+      } 
+    },
     // 初始化表格数据
     initList (obj) {
       this.loading = true
@@ -714,5 +867,31 @@ export default {
       border: none;
     }
   }
+}
+
+.file {
+    position: relative;
+    padding: 9px 15px;
+    margin-left: 10px;
+    font-size: 12px;
+    border-radius: 3px;
+    display: inline-block;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    background: #FFF;
+    border: 1px solid #DCDFE6;
+    color: #606266;
+    -webkit-appearance: none;
+    text-align: center;
+}
+.file input {
+    position: absolute;
+    font-size: 18px;
+    right: 0;
+    top: 0;
+    opacity: 1;
+    z-index: -1;
+    border: 1px solid black;
 }
 </style>

@@ -8,6 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css'; // 默认主题
 import './assets/css/icon.css';
 import './components/common/directives';
 import "babel-polyfill";
+import "./assets/font/iconfont.css";
 
 // 设置上线时不产生提示信息
 Vue.config.productionTip = false

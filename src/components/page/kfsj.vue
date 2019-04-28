@@ -115,7 +115,7 @@
       <el-row>
         <el-col :span="12">
           <div class="grid-content">
-            <el-button>导出</el-button>
+            <el-button @click="exportExcel">导出</el-button>
           </div>
         </el-col>
         <el-col :span="12">
@@ -139,6 +139,7 @@
 
     <el-card>
       <GuestRoomTable :roomStatusedList='roomStatusedList' :total='total' :page='page' :pageSize="pageSize" @changePage="changePage" @changePageSize="changePageSize"></GuestRoomTable>
+      <GuestRoomTable :roomStatusedList='newList' :total='total' :page='page' :pageSize="pageSize" @changePage="changePage" @changePageSize="changePageSize" id="out-table" style="display: none;"></GuestRoomTable>
     </el-card>
   </div>
 </template>
@@ -146,6 +147,8 @@
 import GuestRoomTable from '@/components/common/GuestRoomTable.vue';
 import Table from '@/components/common/Table.vue';
 import { getRoomStatused, getBrandSelect, getHotelSelect, getBoomTypelSelect, getBuildingSelect, getFloorSelect } from '@/api';
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
 export default {
   data () {
     return {
@@ -375,6 +378,7 @@ export default {
         ]
       },
       roomStatusedList: [],
+      newList: [],
       total: 0,
       page: 1,
       pageSize: 10,
@@ -422,6 +426,17 @@ export default {
     GuestRoomTable
   },
   methods: {
+    // 导出 excel 
+    exportExcel () {
+      /* generate workbook object from table */
+      var wb = XLSX.utils.table_to_book(document.querySelector('#out-table'))
+      /* get binary string as output */
+      var wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' })
+      try {
+        FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), 'sheetjs.xlsx')
+      } catch (e) { if (typeof console !== 'undefined') console.log(e, wbout) }
+      return wbout
+    },
     fold () {
       this.foldData = !this.foldData
     },
@@ -510,6 +525,16 @@ export default {
       getRoomStatused(selectData).then(res => {
         this.roomStatusedList = res.data.rows
         this.total = res.data.total
+        if(res.data.total){
+          this.getAllList(res.data.total)
+        }
+      })
+    },
+    getAllList(val) {
+      const selectData = Object.assign({page: this.page, pageSize: val}, this.seekData)
+      getRoomStatused(selectData).then(res => {
+        this.newList = res.data.rows
+        this.total = res.data.total
       })
     },
     changePage(val){
@@ -524,10 +549,7 @@ export default {
     }
   },
   mounted() {
-<<<<<<< HEAD
-=======
     this.foldData = false
->>>>>>> b6a8f59dfd136f145992e82829902af7ce76d814
     this.getList()
     this.initialize()
   }

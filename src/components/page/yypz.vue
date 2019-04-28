@@ -2,6 +2,7 @@
   <div v-loading="loading">
     <el-card shadow="always">
       <el-button @click="addBtn" type="primary" style="margin-bottom: 20px;">新增</el-button>
+      <!-- <i class="iconfont icon-shoes"></i> -->
       <el-table :data="tableData" border row-key="id">
         <el-table-column prop="text" label="名称" width="180"></el-table-column>
         <el-table-column prop="icon" label="图标" width="180"></el-table-column>
@@ -68,7 +69,7 @@
         <el-form-item label="名称" prop="menuName" :label-width="formLabelWidth">
           <el-input v-model="ediEform.menuName" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="权限	" prop="perms" :label-width="formLabelWidth">
+        <el-form-item label="权限	" :label-width="formLabelWidth">
           <el-input v-model="ediEform.perms" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
         <el-form-item label="图标	" :label-width="formLabelWidth">
@@ -124,10 +125,10 @@
         <el-form-item label="名称 " prop="menuName" :label-width="formLabelWidth">
           <el-input v-model="addform.menuName" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="权限	" prop="perms" :label-width="formLabelWidth">
+        <el-form-item label="权限	" :label-width="formLabelWidth">
           <el-input v-model="addform.perms" clearable placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="图标	" :label-width="formLabelWidth">
+        <el-form-item label="图标	" :label-width="formLabelWidth" style="position: relative;">
           <el-input
             v-model="addform.icon"
             clearable
@@ -135,7 +136,14 @@
             :disabled="disabled"
             ref="inputRef1"
             @focus="focusInput"
+            style="text-align: right;"
           ></el-input>
+          <el-button
+            icon="el-icon-setting"
+            :disabled="disabled"
+            class="iconModify"
+            @click="dialogFormVisible3=true"
+          ></el-button>
         </el-form-item>
         <el-form-item label="地址	" prop="path" :label-width="formLabelWidth">
           <el-input
@@ -174,6 +182,22 @@
         <el-button type="primary" @click="confirmAdd(addform)" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 图标的弹框 -->
+    <el-dialog title="选择图标" :visible.sync="dialogFormVisible3" class="astrict">
+      <div
+        v-for="(item,index) in this.arrdata"
+        :key="index"
+        class="my-icon"
+        @click="iconModify(item)"
+      >
+        <i :class="item" style></i>
+        <!-- <div>{{item}}</div> -->
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible3=false">取 消</el-button>
+        <el-button type="primary" @click="iconBtn" :loading="loading">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -196,6 +220,232 @@ export default {
         ],
 
       },
+      dialogFormVisible3: false,
+      arrdata: [
+        'el-icon-edit',
+        'el-icon-delete',
+        'el-icon-search',
+        'el-icon-loading',
+        'el-icon-edit-outline',
+        'el-icon-rank',
+        'iconfont icon-guanliyuan',
+        'iconfont icon-all',
+        'iconfont icon-cart',
+        'iconfont icon-category',
+        'iconfont icon-close',
+        'iconfont icon-comments',
+        'iconfont icon-cry',
+        'iconfont icon-delete',
+        'iconfont icon-edit',
+        'iconfont icon-email',
+        'iconfont icon-favorite',
+        'iconfont icon-form',
+        'iconfont icon-help',
+        'iconfont icon-information',
+        'iconfont icon-less',
+        'iconfont icon-moreunfold',
+        'iconfont icon-more',
+        'iconfont icon-pic',
+        'iconfont icon-qrcode',
+        'iconfont icon-refresh',
+        'iconfont icon-rfq',
+        'iconfont icon-search',
+        'iconfont icon-selected',
+        'iconfont icon-set',
+        'iconfont icon-smile',
+        'iconfont icon-success',
+        'iconfont icon-survey',
+        'iconfont icon-training',
+        'iconfont icon-viewgallery',
+        'iconfont icon-viewlist',
+        'iconfont icon-warning',
+        'iconfont icon-wrong',
+        'iconfont icon-account',
+        'iconfont icon-add',
+        'iconfont icon-atm',
+        'iconfont icon-clock',
+        'iconfont icon-remind',
+        'iconfont icon-calendar',
+        'iconfont icon-attachment',
+        'iconfont icon-discount',
+        'iconfont icon-service',
+        'iconfont icon-print',
+        'iconfont icon-box',
+        'iconfont icon-process',
+        'iconfont icon-beauty',
+        'iconfont icon-electrical',
+        'iconfont icon-home',
+        'iconfont icon-electronics',
+        'iconfont icon-gifts',
+        'iconfont icon-lights',
+        'iconfont icon-sports',
+        'iconfont icon-toys',
+        'iconfont icon-auto',
+        'iconfont icon-jewelry',
+        'iconfont icon-trade-assurance',
+        'iconfont icon-browse',
+        'iconfont icon-rfqqm',
+        'iconfont icon-rfqquantity',
+        'iconfont icon-atmaway',
+        'iconfont icon-rfq1',
+        'iconfont icon-scanning',
+        'iconfont icon-compare',
+        'iconfont icon-filter',
+        'iconfont icon-pin',
+        'iconfont icon-history',
+        'iconfont icon-productfeatures',
+        'iconfont icon-supplierfeatures',
+        'iconfont icon-similarproduct',
+        'iconfont icon-link1',
+        'iconfont icon-cut',
+        'iconfont icon-navlist',
+        'iconfont icon-imagetext',
+        'iconfont icon-text',
+        'iconfont icon-move',
+        'iconfont icon-subtract',
+        'iconfont icon-dollar',
+        'iconfont icon-shanchujinzhi',
+        'iconfont icon-raw',
+        'iconfont icon-office',
+        'iconfont icon-agriculture',
+        'iconfont icon-machinery',
+        'iconfont icon-assessedbadge',
+        'iconfont icon-gerenzhongxin',
+        'iconfont icon-jifen',
+        'iconfont icon-operation',
+        'iconfont icon-remind1',
+        'iconfont icon-icondownload',
+        'iconfont icon-map',
+        'iconfont icon-2',
+        'iconfont icon-bad',
+        'iconfont icon-good',
+        'iconfont icon-skip',
+        'iconfont icon-iconfontplay2',
+        'iconfont icon-iconfontstop',
+        'iconfont icon-compass',
+        'iconfont icon-security',
+        'iconfont icon-share',
+        'iconfont icon-store',
+        'iconfont icon-manageorder',
+        'iconfont icon-rejectedorder',
+        'iconfont icon-phone',
+        'iconfont icon-bussinessman',
+        'iconfont icon-shoes',
+        'iconfont icon-mobilephone',
+        'iconfont icon-emailfilling',
+        'iconfont icon-favoritesfilling',
+        'iconfont icon-accountfilling',
+        'iconfont icon-creditlevel',
+        'iconfont icon-creditlevelfilling',
+        'iconfont icon-exl',
+        'iconfont icon-pdf',
+        'iconfont icon-zip',
+        'iconfont icon-gouwuchetianjia',
+        'iconfont icon-erweima',
+        'iconfont icon-sorting',
+        'iconfont icon-saoyisao',
+        'iconfont icon-shouye',
+        'iconfont icon-suo',
+        'iconfont icon-tishi',
+        'iconfont icon-wancheng',
+        'iconfont icon-wodedingdan',
+        'iconfont icon-yanjing',
+        'iconfont icon-yijianfankui',
+        'iconfont icon-zhaoxiangji',
+        'iconfont icon-copy',
+        'iconfont icon-kongdiao',
+        'iconfont icon-lianjie',
+        'iconfont icon-save',
+        'iconfont icon-inquirytemplate',
+        'iconfont icon-templatedefault',
+        'iconfont icon-tuichu2',
+        'iconfont icon-louceng0',
+        'iconfont icon-louceng',
+        'iconfont icon-libra',
+        'iconfont icon-survey1',
+        'iconfont icon-shenfenzheng',
+        'iconfont icon-ship',
+        'iconfont icon-ai55',
+        'iconfont icon-bussinesscard',
+        'iconfont icon-hot',
+        'iconfont icon-cuowujinzhi',
+        'iconfont icon-data',
+        'iconfont icon-trade',
+        'iconfont icon-onepage48',
+        'iconfont icon-guanliyuan1',
+        'iconfont icon-signboard',
+        'iconfont icon-shuffling-banner',
+        'iconfont icon-component',
+        'iconfont icon-component-filling',
+        'iconfont icon-color',
+        'iconfont icon-color-filling',
+        'iconfont icon-favorites',
+        'iconfont icon-pic-filling',
+        'iconfont icon-RFQ',
+        'iconfont icon-louceng1',
+        'iconfont icon-originalimage',
+        'iconfont icon-logistic',
+        'iconfont icon-Calculator',
+        'iconfont icon-video',
+        'iconfont icon-hold__easyico',
+        'iconfont icon-earth',
+        'iconfont icon-link',
+        'iconfont icon-task-management',
+        'iconfont icon-trust',
+        'iconfont icon-password',
+        'iconfont icon-column',
+        'iconfont icon-apparel',
+        'iconfont icon-bags',
+        'iconfont icon-folder',
+        'iconfont icon-column1',
+        'iconfont icon-code',
+        'iconfont icon-customs-clearance',
+        'iconfont icon-floor-settings',
+        'iconfont icon-tuichu',
+        'iconfont icon-tishijinzhi',
+        'iconfont icon--',
+        'iconfont icon-camera',
+        'iconfont icon-_kongtiao',
+        'iconfont icon-ren',
+        'iconfont icon-dengpao',
+        'iconfont icon-fuwuyuan',
+        'iconfont icon-shiliangzhinengduixiang',
+        'iconfont icon-dengpao_',
+        'iconfont icon-add-account',
+        'iconfont icon-kongtiaokaifang',
+        'iconfont icon-lianjie1',
+        'iconfont icon-qiyeguanli_yuangongguanli',
+        'iconfont icon-jiaoseguanli',
+        'iconfont icon-jiudianfangjian',
+        'iconfont icon-weibiaoti-',
+        'iconfont icon-listing-content',
+        'iconfont icon-warehouse-delivery',
+        'iconfont icon-customization',
+        'iconfont icon-inspection',
+        'iconfont icon-packing-labeling',
+        'iconfont icon-online-tracking',
+        'iconfont icon-anquantuichu',
+        'iconfont icon-fengsu',
+        'iconfont icon-fengsu1',
+        'iconfont icon-fengsu2',
+        'iconfont icon-play-filling',
+        'iconfont icon-nosound-filling',
+        'iconfont icon-sound-filling',
+        'iconfont icon-ren1',
+        'iconfont icon-lianjie2',
+        'iconfont icon-kongtiao',
+        'iconfont icon-jizhongkongtiaojiance',
+        'iconfont icon-electrical-equipment',
+        'iconfont icon-home-appliances',
+        'iconfont icon-furniture',
+        'iconfont icon-fashion-accessories',
+        'iconfont icon-security-protection',
+        'iconfont icon-textile-products',
+        'iconfont icon-tools-hardware',
+        'iconfont icon-office-supplies',
+        'iconfont icon-vehicles',
+        'iconfont icon-yonghujiao',
+      ],
       tableData: null,
       formLabelWidth: "100px",
       loading: false,
@@ -366,10 +616,36 @@ export default {
     dialogClose () {
       this.ediEform.parentId = null
       this.$refs.tree.setCheckedKeys([]);
+    },
+    iconModify (i) {
+      if (!this.addform.type && this.ediEform.type == null) {
+        this.$message.error('请先选择类型')
+      } else {
+        this.addform.icon = i
+        this.dialogFormVisible3 = false
+      }
     }
-
   }
 }
 </script>
 <style lang="scss" scoped>
+.iconModify {
+  right: 0;
+  top: 0;
+  position: absolute;
+  height: 32px;
+}
+.my-icon {
+  margin: 9px 7px;
+  display: inline-block;
+  text-align: center;
+
+  color: #666;
+  i {
+    font-size: 36px;
+    vertical-align: middle;
+    fill: currentColor;
+    overflow: hidden;
+  }
+}
 </style>
