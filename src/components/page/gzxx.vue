@@ -3,74 +3,74 @@
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">
-        <el-collapse-transition>
-          <div v-show="foldData" style="margin-bottom: 10px">
-            <el-form>
-              <el-row :gutter="10">
-                <el-col :span="6">
-                  <el-form-item label="品牌">
-                    <el-select
-                      v-model="seekData.brandId"
-                      @change="selectOne"
-                      clearable
-                      placeholder="请选择"
-                    >
-                      <el-option
-                        v-for="(item,index) in brandSelectData"
-                        :key="index"
-                        :label="item.brandName"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="门店">
-                    <el-select
-                      v-model="seekData.hotelId"
-                      @change="selectTwo"
-                      clearable
-                      placeholder="请选择"
-                    >
-                      <el-option
-                        v-for="(item,index) in hotelSelectData"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="建筑">
-                    <el-select
-                      v-model="seekData.buildingId"
-                      @change="selectThree"
-                      clearable
-                      placeholder="请选择"
-                    >
-                      <el-option
-                        v-for="(item,index) in buildingSelectData"
-                        :key="index"
-                        :label="item.buildingName"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="楼层">
-                    <el-select v-model="seekData.floorId" clearable placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in floorSelectData"
-                        :key="index"
-                        :label="item.floorName"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-              </el-row>
+        <el-form label-width="80px">
+          <el-row :gutter="10" style="margin-bottom: 0px;">
+            <el-col :span="6">
+              <el-form-item label="品牌">
+                <el-select
+                  v-model="seekData.brandId"
+                  @change="selectOne"
+                  clearable
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="(item,index) in brandSelectData"
+                    :key="index"
+                    :label="item.brandName"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="门店">
+                <el-select
+                  v-model="seekData.hotelId"
+                  @change="selectTwo"
+                  clearable
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="(item,index) in hotelSelectData"
+                    :key="index"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="建筑">
+                <el-select
+                  v-model="seekData.buildingId"
+                  @change="selectThree"
+                  clearable
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="(item,index) in buildingSelectData"
+                    :key="index"
+                    :label="item.buildingName"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="楼层">
+                <el-select v-model="seekData.floorId" clearable placeholder="请选择">
+                  <el-option
+                    v-for="(item,index) in floorSelectData"
+                    :key="index"
+                    :label="item.floorName"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-collapse-transition>
+            <div v-show="foldData" style="margin-bottom: 10px">
               <el-row>
                 <el-col :span="6">
                   <el-form-item label="房间号">
@@ -98,7 +98,7 @@
                   <el-form-item label="故障类型">
                     <el-select v-model="seekData.type" clearable placeholder="请选择">
                       <el-option
-                        v-for="item in deviceFaultSelectData"
+                        v-for="(item,index) in deviceFaultSelectData"
                         :key="index"
                         :label="item.valuee"
                         :value="item.keyy"
@@ -107,9 +107,9 @@
                   </el-form-item>
                 </el-col>
               </el-row>
-            </el-form>
-          </div>
-        </el-collapse-transition>
+            </div>
+          </el-collapse-transition>
+        </el-form>
         <!-- 按钮行 -->
         <el-row>
           <el-col :span="19">

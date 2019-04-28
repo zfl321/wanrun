@@ -3,56 +3,58 @@
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">
-        <el-collapse-transition>
-          <div v-show="foldData" style="margin-bottom: 10px">
-            <el-form ref="seekData">
-              <el-row :gutter="10" style="margin-bottom: 0px;">
-                <el-col :span="6">
-                  <el-form-item label="品牌">
-                    <el-select v-model="seekData.brand" @change="selectOne" placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in brandSelectData"
-                        :key="index"
-                        :label="item.brandName"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="门店">
-                    <el-select v-model="seekData.store" @change="selectTwo" placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in hotelSelectData"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="状态">
-                    <el-select v-model="seekData.status" placeholder="请选择">
-                      <el-option
-                        v-for="item in options1"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="账号">
-                    <el-input
-                      placeholder="请输入内容"
-                      v-model="seekData.username"
-                      clearable
-                      class="my-input"
-                    ></el-input>
-                  </el-form-item>
-                </el-col>
+        <el-form ref="seekData">
+          <el-row :gutter="10" style="margin-bottom: 0px;">
+            <el-col :span="6">
+              <el-form-item label="品牌">
+                <el-select v-model="seekData.brand" @change="selectOne" placeholder="请选择">
+                  <el-option
+                    v-for="(item,index) in brandSelectData"
+                    :key="index"
+                    :label="item.brandName"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="门店">
+                <el-select v-model="seekData.store" @change="selectTwo" placeholder="请选择">
+                  <el-option
+                    v-for="(item,index) in hotelSelectData"
+                    :key="index"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="状态">
+                <el-select v-model="seekData.status" placeholder="请选择">
+                  <el-option
+                    v-for="item in options1"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="账号">
+                <el-input
+                  placeholder="请输入内容"
+                  v-model="seekData.username"
+                  clearable
+                  class="my-input"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-collapse-transition>
+            <div v-show="foldData" style="margin-bottom: 10px">
+              <el-row style="margin-bottom: 0px;">
                 <el-col :span="6">
                   <el-form-item label="真实姓名">
                     <el-input
@@ -92,9 +94,9 @@
                   </el-form-item>
                 </el-col>
               </el-row>
-            </el-form>
-          </div>
-        </el-collapse-transition>
+            </div>
+          </el-collapse-transition>
+        </el-form>
         <!-- 按钮行 -->
         <el-row>
           <el-col :span="19">

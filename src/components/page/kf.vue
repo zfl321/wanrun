@@ -3,64 +3,64 @@
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">
-        <el-collapse-transition>
-          <div v-show="foldData" style="margin-bottom: 10px">
-            <el-form>
-              <el-row :gutter="10">
-                <el-col :span="6">
-                  <el-form-item label="品牌">
-                    <el-select v-model="brandId" @change="selectOne" clearable placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in brandSelectData"
-                        :key="index"
-                        :label="item.brandName"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="门店">
-                    <el-select v-model="hotelId" @change="selectTwo" clearable placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in hotelSelectData"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="建筑">
-                    <el-select
-                      v-model="seekData.buildingId"
-                      @change="selectThree"
-                      clearable
-                      placeholder="请选择"
-                    >
-                      <el-option
-                        v-for="(item,index) in buildingSelectData"
-                        :key="index"
-                        :label="item.buildingName"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="楼层">
-                    <el-select v-model="seekData.floorId" clearable placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in floorSelectData"
-                        :key="index"
-                        :label="item.floorName"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-              </el-row>
+        <el-form label-width="80px">
+          <el-row :gutter="10">
+            <el-col :span="6">
+              <el-form-item label="品牌">
+                <el-select v-model="brandId" @change="selectOne" clearable placeholder="请选择">
+                  <el-option
+                    v-for="(item,index) in brandSelectData"
+                    :key="index"
+                    :label="item.brandName"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="门店">
+                <el-select v-model="hotelId" @change="selectTwo" clearable placeholder="请选择">
+                  <el-option
+                    v-for="(item,index) in hotelSelectData"
+                    :key="index"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="建筑">
+                <el-select
+                  v-model="seekData.buildingId"
+                  @change="selectThree"
+                  clearable
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="(item,index) in buildingSelectData"
+                    :key="index"
+                    :label="item.buildingName"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="楼层">
+                <el-select v-model="seekData.floorId" clearable placeholder="请选择">
+                  <el-option
+                    v-for="(item,index) in floorSelectData"
+                    :key="index"
+                    :label="item.floorName"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-collapse-transition>
+            <div v-show="foldData" style="margin-bottom: 10px">
               <el-row>
                 <el-col :span="6">
                   <el-form-item label="房间号">
@@ -93,9 +93,9 @@
                   </el-form-item>
                 </el-col>
               </el-row>
-            </el-form>
-          </div>
-        </el-collapse-transition>
+            </div>
+          </el-collapse-transition>
+        </el-form>
         <!-- 按钮行 -->
         <el-row>
           <el-col :span="19">
@@ -106,9 +106,15 @@
             <!-- <label class="control-label file">
               <input type="file" @change="importf(this)" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
               导入excel
-            </label> -->
+            </label>-->
             <label class="control-label file">
-              <input type="file" class="upload" @change="importExcel" ref="inputer" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
+              <input
+                type="file"
+                class="upload"
+                @change="importExcel"
+                ref="inputer"
+                accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+              >
               导入excel
             </label>
             <div style="color: #fff; display: inline-block;">.</div>
@@ -146,7 +152,8 @@
             tooltip-effect="dark"
             :height="dv"
             style="width: 100%"
-            @selection-change="handleSelectionChange">
+            @selection-change="handleSelectionChange"
+          >
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="brandName" label="品牌" width="120"></el-table-column>
             <el-table-column prop="hotelName" label="门店" width="120"></el-table-column>
@@ -417,14 +424,14 @@ export default {
   },
   methods: {
     // 下载模板
-    uploadExcel(){
-      Axios.post(`${Axios.defaults.baseURL}/room/template`, {}, {responseType: 'arraybuffer'}).then(res => {
+    uploadExcel () {
+      Axios.post(`${Axios.defaults.baseURL}/room/template`, {}, { responseType: 'arraybuffer' }).then(res => {
         console.log(res)
-        var blob = new Blob([res.data], {type: 'application/vnd.ms-excel'});
+        var blob = new Blob([res.data], { type: 'application/vnd.ms-excel' });
         var downloadElement = document.createElement('a');
         var href = window.URL.createObjectURL(blob); // 创建下载的链接
         downloadElement.href = href;
-        downloadElement.download = '上传模板' +'.xlsx'; // 下载后文件名
+        downloadElement.download = '上传模板' + '.xlsx'; // 下载后文件名
         document.body.appendChild(downloadElement);
         downloadElement.click(); // 点击下载
         document.body.removeChild(downloadElement); // 下载完成移除元素
@@ -445,7 +452,7 @@ export default {
     },
 
     // 导入excel
-    importExcel(event) {
+    importExcel (event) {
       let inputDOM = this.$refs.inputer;
       // 通过DOM取文件数据
       // this.fil = inputDOM.files;
@@ -485,42 +492,42 @@ export default {
       // });
     },
 
-    importf(obj) {
-      let _this = this;  
-      this.file = event.currentTarget.files[0];  
+    importf (obj) {
+      let _this = this;
+      this.file = event.currentTarget.files[0];
       var rABS = false; //是否将文件读取为二进制字符串  
-      var file = this.file; 
+      var file = this.file;
 
-      FileReader.prototype.readAsBinaryString = function(f) {  
-        var binary = "";  
+      FileReader.prototype.readAsBinaryString = function (f) {
+        var binary = "";
         var rABS = false; //是否将文件读取为二进制字符串  
-        var pt = this;  
+        var pt = this;
         var workbook; //读取完成的数据  
         // var excelData;  
-        var reader = new FileReader(); 
-        reader.onprogress = function(e) { 
+        var reader = new FileReader();
+        reader.onprogress = function (e) {
           let total = file.size;
-          _this.progress = (e.loaded/total)*100;
-          console.log( _this.progress);
-        };   
-        reader.onload = function(e) {
+          _this.progress = (e.loaded / total) * 100;
+          console.log(_this.progress);
+        };
+        reader.onload = function (e) {
           try {
-            var bytes = new Uint8Array(reader.result);  
-            var length = bytes.byteLength;  
-            for(var i = 0; i < length; i++) {  
-              binary += String.fromCharCode(bytes[i]);  
-            }  
-            if(rABS) {  
+            var bytes = new Uint8Array(reader.result);
+            var length = bytes.byteLength;
+            for (var i = 0; i < length; i++) {
+              binary += String.fromCharCode(bytes[i]);
+            }
+            if (rABS) {
               workbook = XLSX.read(btoa(fixdata(binary)), { //手动转化  
-                type: 'base64'  
-              });  
-            }else {  
-              workbook = XLSX.read(binary, {  
-                type: 'binary'  
-              });  
-            } 
+                type: 'base64'
+              });
+            } else {
+              workbook = XLSX.read(binary, {
+                type: 'binary'
+              });
+            }
             // excelData = []; 
-          } catch(e) {
+          } catch (e) {
             console.log('文件类型不正确');
             return;
           }
@@ -537,16 +544,16 @@ export default {
           })
         };
 
-        reader.readAsArrayBuffer(f);  
+        reader.readAsArrayBuffer(f);
 
-      } 
- 
+      }
+
       var reader = new FileReader();
-      if(rABS) {  
-        reader.readAsArrayBuffer(file);  
-      }else {  
-        reader.readAsBinaryString(file);  
-      } 
+      if (rABS) {
+        reader.readAsArrayBuffer(file);
+      } else {
+        reader.readAsBinaryString(file);
+      }
     },
     // 初始化表格数据
     initList (obj) {
@@ -836,7 +843,7 @@ export default {
     white-space: nowrap;
   }
   .my-input {
-    max-width: 200px;
+    max-width: 215px;
   }
   .el-row {
     margin-bottom: 10px;
@@ -870,28 +877,28 @@ export default {
 }
 
 .file {
-    position: relative;
-    padding: 9px 15px;
-    margin-left: 10px;
-    font-size: 12px;
-    border-radius: 3px;
-    display: inline-block;
-    line-height: 1;
-    white-space: nowrap;
-    cursor: pointer;
-    background: #FFF;
-    border: 1px solid #DCDFE6;
-    color: #606266;
-    -webkit-appearance: none;
-    text-align: center;
+  position: relative;
+  padding: 9px 15px;
+  margin-left: 10px;
+  font-size: 12px;
+  border-radius: 3px;
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #dcdfe6;
+  color: #606266;
+  -webkit-appearance: none;
+  text-align: center;
 }
 .file input {
-    position: absolute;
-    font-size: 18px;
-    right: 0;
-    top: 0;
-    opacity: 1;
-    z-index: -1;
-    border: 1px solid black;
+  position: absolute;
+  font-size: 18px;
+  right: 0;
+  top: 0;
+  opacity: 1;
+  z-index: -1;
+  border: 1px solid black;
 }
 </style>

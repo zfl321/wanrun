@@ -3,32 +3,32 @@
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">
-        <el-collapse-transition>
-          <div v-show="foldData" style="margin-bottom: 10px">
-            <el-form label-position="right" inline>
-              <el-row :gutter="10">
-                <el-col :span="8">
-                  <el-form-item label="角色名">
-                    <el-input
-                      placeholder="请输入内容"
-                      v-model="seekData.roleName"
-                      clearable
-                      class="my-input"
-                    ></el-input>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="创建人">
-                    <el-input
-                      placeholder="请输入内容"
-                      v-model="seekData.createUser"
-                      clearable
-                      class="my-input"
-                    ></el-input>
-                  </el-form-item>
-                </el-col>
-              </el-row>
+        <el-form label-position="right" inline>
+          <el-row :gutter="10" style="margin-bottom: 0px;">
+            <el-col :span="8">
+              <el-form-item label="角色名">
+                <el-input
+                  placeholder="请输入内容"
+                  v-model="seekData.roleName"
+                  clearable
+                  class="my-input"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="创建人">
+                <el-input
+                  placeholder="请输入内容"
+                  v-model="seekData.createUser"
+                  clearable
+                  class="my-input"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
 
+          <el-collapse-transition>
+            <div v-show="foldData" style="margin-bottom: 10px">
               <el-row>
                 <el-col :span="24">
                   <div class>
@@ -46,9 +46,9 @@
                   </div>
                 </el-col>
               </el-row>
-            </el-form>
-          </div>
-        </el-collapse-transition>
+            </div>
+          </el-collapse-transition>
+        </el-form>
         <!-- 按钮行 -->
         <el-row>
           <el-col :span="19">

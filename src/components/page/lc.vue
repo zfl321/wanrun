@@ -3,60 +3,60 @@
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">
-        <el-collapse-transition>
-          <div v-show="foldData" style="margin-bottom: 10px">
-            <el-form>
-              <el-row :gutter="10">
-                <el-col :span="6">
-                  <el-form-item label="品牌">
-                    <el-select v-model="brandId" @change="selectOne" placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in brandSelectData"
-                        :key="index"
-                        :label="item.brandName"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="门店">
-                    <el-select v-model="hotelId" @change="selectTwo" placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in hotelSelectData"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="建筑">
-                    <el-select v-model="seekData.buildingId" placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in buildingSelectData"
-                        :key="index"
-                        :label="item.buildingName"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="楼层">
-                    <el-input
-                      placeholder="请输入内容"
-                      v-model="seekData.floorName"
-                      clearable
-                      class="my-input"
-                    ></el-input>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-            </el-form>
-          </div>
-        </el-collapse-transition>
+        <!-- <el-collapse-transition>
+        <div v-show="foldData" style="margin-bottom: 10px">-->
+        <el-form label-width="80px">
+          <el-row :gutter="10">
+            <el-col :span="6">
+              <el-form-item label="品牌">
+                <el-select v-model="brandId" @change="selectOne" placeholder="请选择">
+                  <el-option
+                    v-for="(item,index) in brandSelectData"
+                    :key="index"
+                    :label="item.brandName"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="门店">
+                <el-select v-model="hotelId" @change="selectTwo" placeholder="请选择">
+                  <el-option
+                    v-for="(item,index) in hotelSelectData"
+                    :key="index"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="建筑">
+                <el-select v-model="seekData.buildingId" placeholder="请选择">
+                  <el-option
+                    v-for="(item,index) in buildingSelectData"
+                    :key="index"
+                    :label="item.buildingName"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="楼层">
+                <el-input
+                  placeholder="请输入内容"
+                  v-model="seekData.floorName"
+                  clearable
+                  class="my-input"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <!-- </div>
+        </el-collapse-transition>-->
         <!-- 按钮行 -->
         <el-row>
           <el-col :span="19">
@@ -67,7 +67,7 @@
           <el-col :span="5" class="reset-button">
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="reset">重置</el-button>
-            <el-button plain class="my-icont" @click="fold">
+            <!-- <el-button plain class="my-icont" @click="fold">
               <div v-if="foldData">
                 收起
                 <i class="el-icon-arrow-up"></i>
@@ -76,7 +76,7 @@
                 展开
                 <i class="el-icon-arrow-down"></i>
               </div>
-            </el-button>
+            </el-button>-->
           </el-col>
         </el-row>
       </el-card>
@@ -157,7 +157,9 @@
     <el-dialog title="新增建筑" :visible.sync="dialogFormVisible" class="astrict">
       <el-form :model="addform" :ref="addform" :rules="myrules">
         <el-form-item label="楼层" :label-width="formLabelWidth">
-          <div style="display: inline-flex;flex-direction: row;justify-content: space-between;width: 100%;">
+          <div
+            style="display: inline-flex;flex-direction: row;justify-content: space-between;width: 100%;"
+          >
             <el-input-number
               style="width: 100%;"
               v-model="addform.beg"
@@ -384,7 +386,7 @@ export default {
       // addform.province = selectedOptions
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          if(this.addform.beg > this.addform.end){
+          if (this.addform.beg > this.addform.end) {
             this.$message({
               type: 'error',
               message: '请正确输入起止楼层'

@@ -3,48 +3,48 @@
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">
-        <el-collapse-transition>
-          <div v-show="foldData" style="margin-bottom: 10px">
-            <el-form>
-              <el-row :gutter="10">
-                <el-col :span="6">
-                  <el-form-item label="品牌">
-                    <el-select v-model="seekData.brandId" @change="selectOne" placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in brandSelectData"
-                        :key="index"
-                        :label="item.brandName"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="门店">
-                    <el-select v-model="seekData.hotelId" placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in hotelSelectData"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="建筑">
-                    <el-input
-                      placeholder="请输入内容"
-                      v-model="seekData.buildingName"
-                      clearable
-                      class="my-input"
-                    ></el-input>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-            </el-form>
-          </div>
-        </el-collapse-transition>
+        <!-- <el-collapse-transition>
+        <div v-show="foldData" style="margin-bottom: 10px">-->
+        <el-form label-width="80px">
+          <el-row :gutter="10">
+            <el-col :span="6">
+              <el-form-item label="品牌">
+                <el-select v-model="seekData.brandId" @change="selectOne" placeholder="请选择">
+                  <el-option
+                    v-for="(item,index) in brandSelectData"
+                    :key="index"
+                    :label="item.brandName"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="门店">
+                <el-select v-model="seekData.hotelId" placeholder="请选择">
+                  <el-option
+                    v-for="(item,index) in hotelSelectData"
+                    :key="index"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="建筑">
+                <el-input
+                  placeholder="请输入内容"
+                  v-model="seekData.buildingName"
+                  clearable
+                  class="my-input"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <!-- </div>
+        </el-collapse-transition>-->
         <!-- 按钮行 -->
         <el-row>
           <el-col :span="19">
@@ -55,7 +55,7 @@
           <el-col :span="5" class="reset-button">
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="reset">重置</el-button>
-            <el-button plain class="my-icont" @click="fold">
+            <!-- <el-button plain class="my-icont" @click="fold">
               <div v-if="foldData">
                 收起
                 <i class="el-icon-arrow-up"></i>
@@ -64,7 +64,7 @@
                 展开
                 <i class="el-icon-arrow-down"></i>
               </div>
-            </el-button>
+            </el-button>-->
           </el-col>
         </el-row>
       </el-card>

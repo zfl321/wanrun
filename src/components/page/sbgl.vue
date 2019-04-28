@@ -3,56 +3,53 @@
     <!-- 功能区域 -->
     <el-row>
       <el-card shadow="always">
-        <el-collapse-transition>
-          <div v-show="foldData" style="margin-bottom: 10px">
-            <el-form label-width="80PX">
-              <el-row :gutter="10">
-                <el-col :span="6">
-                  <el-form-item label="品牌">
-                    <el-select v-model="seekData.brandId" @change="selectOne" placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in brandSelectData"
-                        :key="index"
-                        :label="item.brandName"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="房间类型" :label-width="formLabelWidth">
-                    <el-select v-model="seekData.roomTypeId" clearable placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in roomTypeSelectData"
-                        :key="index"
-                        :label="item.typeName"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="设备类型" :label-width="formLabelWidth">
-                    <el-select v-model="seekData.eqType" clearable placeholder="请选择">
-                      <el-option
-                        v-for="(item,index) in eqTypeSelectData"
-                        :key="index"
-                        :label="item.valuee"
-                        :value="item.keyy"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="设备名称">
-                    <el-input
-                      placeholder="请输入内容"
-                      v-model="seekData.eqName"
-                      clearable
-                      class="my-input"
-                    ></el-input>
-                  </el-form-item>
-                </el-col>
+        <el-form label-width="80PX">
+          <el-row :gutter="10">
+            <el-col :span="6">
+              <el-form-item label="品牌">
+                <el-select v-model="seekData.brandId" @change="selectOne" placeholder="请选择">
+                  <el-option
+                    v-for="(item,index) in brandSelectData"
+                    :key="index"
+                    :label="item.brandName"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="房间类型" :label-width="formLabelWidth">
+                <el-select v-model="seekData.roomTypeId" clearable placeholder="请选择">
+                  <el-option
+                    v-for="(item,index) in roomTypeSelectData"
+                    :key="index"
+                    :label="item.typeName"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="设备类型" :label-width="formLabelWidth">
+                <el-select v-model="seekData.eqType" clearable placeholder="请选择">
+                  <el-option
+                    v-for="(item,index) in eqTypeSelectData"
+                    :key="index"
+                    :label="item.valuee"
+                    :value="item.keyy"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="设备名称">
+                <el-input placeholder="请输入内容" v-model="seekData.eqName" clearable class="my-input"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-collapse-transition>
+            <div v-show="foldData" style="margin-bottom: 10px">
+              <el-row>
                 <el-col :span="6">
                   <el-form-item label="设备编号">
                     <el-input
@@ -74,9 +71,9 @@
                   </el-form-item>
                 </el-col>
               </el-row>
-            </el-form>
-          </div>
-        </el-collapse-transition>
+            </div>
+          </el-collapse-transition>
+        </el-form>
         <!-- 按钮行 -->
         <el-row>
           <el-col :span="19">
@@ -646,7 +643,7 @@ export default {
     white-space: nowrap;
   }
   .my-input {
-    max-width: 200px;
+    max-width: 215px;
   }
   .el-row {
     margin-bottom: 10px;
