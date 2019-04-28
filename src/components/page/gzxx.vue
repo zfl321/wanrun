@@ -145,8 +145,8 @@
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" disabled width="55"></el-table-column>
-            <el-table-column prop="brandName" label="品牌" width="120"></el-table-column>
-            <el-table-column prop="hotelName" label="门店" width="120"></el-table-column>
+            <el-table-column prop="brandName" label="品牌" fit></el-table-column>
+            <el-table-column prop="hotelName" label="门店" fit></el-table-column>
             <el-table-column prop="buildingName" label="建筑" width="120"></el-table-column>
             <el-table-column prop="floorName" label="楼层" width="80"></el-table-column>
             <el-table-column prop="roomNumber" label="房间号" width="70"></el-table-column>
